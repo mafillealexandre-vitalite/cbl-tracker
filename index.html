@@ -69,6 +69,7 @@ function SetupScreen(){
   const[newReps,setNewReps]=useState(20);
   const[sessionId,setSessionId]=useState(null);
   const[creating,setCreating]=useState(false);
+  const[createError,setCreateError]=useState("");
   const[scanning,setScanning]=useState(false);
   const[scanError,setScanError]=useState("");
   const fileRef=useRef();
@@ -79,36 +80,51 @@ function SetupScreen(){
   // ── PHOTO SCAN ────────────────────────────────────────────────────────────
   const handleScan=async(e)=>{
     const file=e.target.files[0];if(!file)return;
+    let apiKey=localStorage.getItem("claude_api_key");
+    if(!apiKey){
+      apiKey=window.prompt("Clé API Claude (https://console.anthropic.com) — stockée localement :");
+      if(!apiKey){if(fileRef.current)fileRef.current.value="";return;}
+      localStorage.setItem("claude_api_key",apiKey.trim());
+    }
     setScanError("");setScanning(true);
     try{
       const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(file);});
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",max_tokens:1000,
+      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-calls":"true"},body:JSON.stringify({
+        model:"claude-haiku-4-5-20251001",max_tokens:500,
         messages:[{role:"user",content:[
           {type:"image",source:{type:"base64",media_type:file.type||"image/jpeg",data:b64}},
           {type:"text",text:`Tu es un assistant calisthenics. Extrais la liste des exercices et leurs répétitions dans cette image de circuit CBL.\nRéponds UNIQUEMENT en JSON valide, sans markdown : {"exercises":[{"name":"Pull-ups","reps":25},...]}\nMaximum 12 exercices. Si rien de visible : {"exercises":[]}.`}
         ]}]
       })});
+      if(!resp.ok){
+        const err=await resp.json().catch(()=>({}));
+        if(resp.status===401)localStorage.removeItem("claude_api_key");
+        throw new Error(err.error?.message||`Erreur ${resp.status}`);
+      }
       const data=await resp.json();
       const text=data.content?.map(b=>b.text||"").join("").trim();
       const parsed=JSON.parse(text);
       if(parsed.exercises?.length>0){setExercises(parsed.exercises.slice(0,12));setScanError("");}
       else setScanError("Aucun exercice détecté. Essaie une photo plus nette.");
-    }catch{setScanError("Erreur de lecture. Réessaie.");}
+    }catch(err){setScanError(err.message||"Erreur de lecture. Réessaie.");}
     finally{setScanning(false);if(fileRef.current)fileRef.current.value="";}
   };
 
   const create=async()=>{
-    if(!ok)return;setCreating(true);
-    const id=genId();
-    await db.ref(`sessions/${id}`).set({
-      id,phase:phase||"Battle",started:false,startTime:null,
-      athletes:Object.fromEntries(active.map(a=>[a.name,{
-        color:a.color,currentExercise:0,finishTime:null,
-        exercises:exercises.map(ex=>({name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false}))
-      }]))
-    });
-    setSessionId(id);setCreating(false);
+    if(!ok)return;setCreating(true);setCreateError("");
+    try{
+      const id=genId();
+      await db.ref(`sessions/${id}`).set({
+        id,phase:phase||"Battle",started:false,startTime:null,
+        athletes:Object.fromEntries(active.map(a=>[a.name,{
+          color:a.color,currentExercise:0,finishTime:null,
+          exercises:exercises.map(ex=>({name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false}))
+        }]))
+      });
+      setSessionId(id);
+    }catch(err){
+      setCreateError("Erreur Firebase : "+(err.message||"vérifiez les règles de sécurité du projet cbl-cup"));
+    }finally{setCreating(false);}
   };
 
   if(sessionId){
@@ -219,6 +235,7 @@ function SetupScreen(){
           style={{width:"100%",padding:18,background:ok?`linear-gradient(135deg,#FF3B30,#0A84FF)`:G.surface,border:"none",borderRadius:10,color:ok?"#fff":G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:22,fontWeight:900,letterSpacing:6,cursor:ok?"pointer":"not-allowed"}}>
           {creating?"CRÉATION…":"CRÉER LA SESSION →"}
         </button>
+        {createError&&<div style={{background:"rgba(255,59,48,0.1)",border:"1px solid rgba(255,59,48,0.3)",borderRadius:6,padding:"10px 14px",fontSize:12,color:"#FF3B30",marginTop:8}}>{createError}</div>}
       </div>
     </div>
   );
