@@ -78,30 +78,43 @@ function SetupScreen(){
   const ok=active.length>=2&&exercises.length>=1;
 
   // ── PHOTO SCAN ────────────────────────────────────────────────────────────
+  const callAnthropic=async(b64,mediaType,key)=>{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-calls":"true"},body:JSON.stringify({
+      model:"claude-haiku-4-5-20251001",max_tokens:500,
+      messages:[{role:"user",content:[
+        {type:"image",source:{type:"base64",media_type:mediaType,data:b64}},
+        {type:"text",text:"Tu es un assistant calisthenics. Extrais la liste des exercices et leurs répétitions dans cette image de circuit CBL.\nRéponds UNIQUEMENT en JSON valide, sans markdown : {\"exercises\":[{\"name\":\"Pull-ups\",\"reps\":25},...] }\nMaximum 12 exercices. Si rien de visible : {\"exercises\":[]}."}
+      ]}]
+    })});
+    if(!r.ok){
+      const e=await r.json().catch(()=>({}));
+      if(r.status===401){localStorage.removeItem("cbl_api_key");throw new Error("Clé API invalide — réessaie.");}
+      throw new Error(e.error?.message||`Erreur ${r.status}`);
+    }
+    return r.json();
+  };
+
   const handleScan=async(e)=>{
     const file=e.target.files[0];if(!file)return;
-    let key=(localStorage.getItem("cbl_api_key")||"").trim();
-    if(!key){
-      key=(window.prompt("Clé API Claude (console.anthropic.com → API Keys)\nElle sera sauvegardée localement.")||"").trim();
-      if(!key){if(fileRef.current)fileRef.current.value="";return;}
-      localStorage.setItem("cbl_api_key",key);
-    }
     setScanError("");setScanning(true);
     try{
       const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(file);});
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-calls":"true"},body:JSON.stringify({
-        model:"claude-haiku-4-5-20251001",max_tokens:500,
-        messages:[{role:"user",content:[
-          {type:"image",source:{type:"base64",media_type:file.type||"image/jpeg",data:b64}},
-          {type:"text",text:"Tu es un assistant calisthenics. Extrais la liste des exercices et leurs répétitions dans cette image de circuit CBL.\nRéponds UNIQUEMENT en JSON valide, sans markdown : {\"exercises\":[{\"name\":\"Pull-ups\",\"reps\":25},...] }\nMaximum 12 exercices. Si rien de visible : {\"exercises\":[]}."}
-        ]}]
-      })});
-      if(!resp.ok){
-        const err=await resp.json().catch(()=>({}));
-        if(resp.status===401){localStorage.removeItem("cbl_api_key");throw new Error("Clé API invalide — elle a été effacée, réessaie.");}
-        throw new Error(err.error?.message||`Erreur ${resp.status}`);
+      const mt=file.type||"image/jpeg";
+      let data;
+      // Essai 1 : proxy Vercel (clé côté serveur)
+      const proxy=await fetch("/api/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:b64,mediaType:mt})});
+      if(proxy.ok){
+        data=await proxy.json();
+      } else {
+        // Essai 2 : appel direct avec clé localStorage
+        let key=(localStorage.getItem("cbl_api_key")||"").trim();
+        if(!key){
+          key=(window.prompt("Clé API Claude (console.anthropic.com → API Keys)\nSauvegardée localement, une seule fois.")||"").trim();
+          if(!key){setScanError("Clé API requise.");return;}
+          localStorage.setItem("cbl_api_key",key);
+        }
+        data=await callAnthropic(b64,mt,key);
       }
-      const data=await resp.json();
       const text=data.content?.map(b=>b.text||"").join("").trim();
       const parsed=JSON.parse(text);
       if(parsed.exercises?.length>0){setExercises(parsed.exercises.slice(0,12));setScanError("");}
