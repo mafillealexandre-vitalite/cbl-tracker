@@ -1,0 +1,2663 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Potentiel Caché Révélé : un parcours progressif en neurosciences, philosophie pratique et connaissance de soi pour transformer la compréhension en changement durable." />
+  <title>Potentiel Caché Révélé — Neurosciences · Philosophie · Transformation</title>
+  <style>
+    /* ── RESET & BASE ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --night:    #0A0E1A;
+      --deep:     #0F1629;
+      --card:     #151C33;
+      --border:   #1E2A4A;
+      --border2:  rgba(108,71,255,0.2);
+      --violet:   #6C47FF;
+      --violet-l: #8A6FFF;
+      --violet-d: #4A2FDD;
+      --gold:     #F0B429;
+      --gold-l:   #FACA57;
+      --cream:    #F5F0E8;
+      --muted:    #7A8BA8;
+      --text:     #C8D4E8;
+      --white:    #FFFFFF;
+      --eveil:        #22C55E;
+      --eveil-bg:     rgba(34,197,94,0.1);
+      --exploration:  #06B6D4;
+      --exploration-bg: rgba(6,182,212,0.1);
+      --integration:  #F0B429;
+      --integration-bg: rgba(240,180,41,0.1);
+      --neuro:    #7C3AED;
+      --philo:    #0891B2;
+      --spirit:   #D97706;
+      --font-h: 'Georgia', 'Times New Roman', serif;
+      --font-b: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      --radius:    14px;
+      --radius-sm: 8px;
+      --shadow:    0 8px 32px rgba(108,71,255,0.15);
+      --glass:     rgba(21,28,51,0.7);
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--night);
+      color: var(--text);
+      font-family: var(--font-b);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    ::selection { background: var(--violet); color: white; }
+    a { color: var(--violet-l); text-decoration: none; }
+    a:focus-visible, button:focus-visible, [role="button"]:focus-visible {
+      outline: 2px solid var(--gold-l);
+      outline-offset: 2px;
+    }
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -100px;
+      z-index: 1200;
+      background: var(--white);
+      color: #0b1224;
+      border-radius: 10px;
+      padding: .55rem .9rem;
+      font-size: .85rem;
+      font-weight: 600;
+      transition: top .2s;
+    }
+    .skip-link:focus { top: 1rem; }
+
+    /* ── SCROLLBAR ─────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--night); }
+    ::-webkit-scrollbar-thumb { background: var(--violet-d); border-radius: 3px; }
+
+    /* ── PARTICLES ─────────────────────────────────────────── */
+    #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .4; }
+
+    /* ── COMMONS ───────────────────────────────────────────── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
+    .section-tag {
+      display: inline-block;
+      font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--violet-l);
+      background: rgba(108,71,255,0.12);
+      padding: .3rem .8rem; border-radius: 50px;
+      margin-bottom: 1.2rem;
+    }
+    .section-title {
+      font-family: var(--font-h);
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white); line-height: 1.2; margin-bottom: .8rem;
+    }
+    .section-sub {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 560px; line-height: 1.7;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--violet); color: white;
+      padding: .85rem 1.8rem; border-radius: 50px;
+      font-weight: 600; font-size: .95rem;
+      border: none; cursor: pointer; transition: all .2s;
+    }
+    .btn-primary:hover { background: var(--violet-l); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,71,255,0.35); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: transparent; color: var(--text);
+      padding: .85rem 1.8rem; border-radius: 50px;
+      font-weight: 500; font-size: .95rem;
+      border: 1px solid var(--border); cursor: pointer; transition: all .2s;
+    }
+    .btn-ghost:hover { border-color: var(--violet-l); color: var(--white); }
+
+    /* ── ANIMATIONS ────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+
+    /* ── NAV ───────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 2rem;
+      background: rgba(10,14,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border2);
+    }
+    .nav-logo { font-family: var(--font-h); font-size: 1.05rem; color: var(--white); letter-spacing: .02em; }
+    .nav-logo span { color: var(--violet-l); }
+    .nav-links { display: flex; gap: 1.6rem; align-items: center; }
+    .nav-links a { font-size: .875rem; color: var(--muted); transition: color .2s; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-toggle {
+      display: none;
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--white);
+      cursor: pointer;
+      font-size: 1rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-cta {
+      background: var(--violet); color: white !important;
+      padding: .45rem 1.1rem; border-radius: 50px;
+      font-size: .8rem; font-weight: 600;
+      transition: background .2s, transform .15s;
+    }
+    .nav-cta:hover { background: var(--violet-l); transform: translateY(-1px); }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 6rem 0 4rem;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,71,255,0.18) 0%, transparent 70%);
+    }
+    #hero > .container { display: contents; }
+    .hero-col { padding: 0 1.5rem; }
+    .hero-eyebrow {
+      font-size: .75rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--violet-l); margin-bottom: 1rem;
+    }
+    .hero-title {
+      font-family: var(--font-h);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      color: var(--white); line-height: 1.15; margin-bottom: 1.4rem;
+    }
+    .hero-title em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--violet-l), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--muted);
+      line-height: 1.75; margin-bottom: 2.2rem; max-width: 480px;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+    .hero-badges { display: flex; gap: .8rem; flex-wrap: wrap; }
+    .badge {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .75rem; color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: .3rem .75rem; border-radius: 50px;
+    }
+
+    /* ── ECOSYSTEM MAP ─────────────────────────────────────── */
+    .ecosystem-map {
+      position: relative;
+      width: min(520px, 90%);
+      height: min(520px, 90%);
+      margin: 0 auto;
+    }
+    .eco-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .eco-center {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px; height: 120px;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border2);
+      border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; cursor: pointer; transition: all .3s; z-index: 10;
+      box-shadow: 0 0 40px rgba(108,71,255,0.12);
+    }
+    .eco-center:hover { box-shadow: 0 0 60px rgba(108,71,255,0.25); border-color: var(--violet); }
+    .eco-center .center-emoji { font-size: 1.8rem; margin-bottom: .2rem; }
+    .eco-center .center-label { font-family: var(--font-h); font-size: .82rem; color: var(--white); line-height: 1.2; }
+    .eco-center .center-sub { font-size: .6rem; color: var(--violet-l); letter-spacing: .08em; text-transform: uppercase; margin-top: .2rem; }
+    .eco-node {
+      position: absolute; transform: translate(-50%, -50%);
+      cursor: pointer; transition: all .3s; z-index: 5;
+    }
+    .eco-node-inner {
+      width: 100px; height: 100px; border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; border: 1px solid; transition: all .3s; padding: .8rem;
+      backdrop-filter: blur(8px);
+    }
+    .eco-node:hover .eco-node-inner { transform: scale(1.08); }
+    .eco-node.neuro  .eco-node-inner { background: rgba(108,71,255,0.08); border-color: rgba(108,71,255,0.4); }
+    .eco-node.spirit .eco-node-inner { background: rgba(240,180,41,0.08);  border-color: rgba(240,180,41,0.4); }
+    .eco-node.philo  .eco-node-inner { background: rgba(8,145,178,0.08);   border-color: rgba(8,145,178,0.4); }
+    .eco-node:hover.neuro  .eco-node-inner { background: rgba(108,71,255,0.16); border-color: var(--violet-l); box-shadow: 0 0 30px rgba(108,71,255,0.2); }
+    .eco-node:hover.spirit .eco-node-inner { background: rgba(240,180,41,0.16);  border-color: var(--gold-l);   box-shadow: 0 0 30px rgba(240,180,41,0.2); }
+    .eco-node:hover.philo  .eco-node-inner { background: rgba(8,145,178,0.16);   border-color: #38BDF8;         box-shadow: 0 0 30px rgba(8,145,178,0.2); }
+    .eco-node-emoji { font-size: 1.5rem; margin-bottom: .25rem; }
+    .eco-node-label { font-family: var(--font-h); font-size: .76rem; color: var(--white); line-height: 1.2; font-weight: 600; }
+    .eco-node-count { font-size: .6rem; margin-top: .15rem; letter-spacing: .06em; }
+    .eco-node.neuro  .eco-node-count { color: var(--violet-l); }
+    .eco-node.spirit .eco-node-count { color: var(--gold); }
+    .eco-node.philo  .eco-node-count { color: #38BDF8; }
+    .eco-sub {
+      position: absolute; transform: translate(-50%, -50%);
+      z-index: 4; cursor: pointer;
+      opacity: 0; transition: all .4s; pointer-events: none;
+    }
+    .eco-sub.visible { opacity: 1; pointer-events: all; }
+    .eco-sub-inner {
+      width: 64px; height: 64px; border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; font-size: .55rem; color: var(--text);
+      background: var(--glass); backdrop-filter: blur(8px);
+      border: 1px solid var(--border2);
+      transition: all .25s; padding: .4rem; line-height: 1.3;
+    }
+    .eco-sub:hover .eco-sub-inner { transform: scale(1.1); border-color: var(--violet); background: rgba(108,71,255,0.12); color: var(--white); }
+    .eco-sub-emoji { font-size: .95rem; margin-bottom: .1rem; }
+
+    /* ── ENTONNOIR ─────────────────────────────────────────── */
+    #entonnoir {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, transparent, rgba(15,22,41,0.4) 50%, transparent);
+    }
+    .entonnoir-header { margin-bottom: 3.5rem; }
+    .funnel-wrap { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start; }
+    .funnel-levels { display: flex; flex-direction: column; gap: .8rem; }
+    .funnel-level {
+      padding: 1.2rem 1.4rem;
+      background: var(--glass); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; transition: all .25s;
+      position: relative; overflow: hidden;
+    }
+    .funnel-level::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; border-radius: 3px 0 0 3px; opacity: 0; transition: opacity .25s;
+    }
+    .funnel-level.active::before, .funnel-level:hover::before { opacity: 1; }
+    .funnel-level.f-neuro::before  { background: linear-gradient(180deg, var(--violet), var(--violet-l)); }
+    .funnel-level.f-spirit::before { background: linear-gradient(180deg, var(--gold-l), var(--gold)); }
+    .funnel-level.f-philo::before  { background: linear-gradient(180deg, #38BDF8, #0891B2); }
+    .funnel-level.f-soi::before    { background: linear-gradient(180deg, var(--violet-l), var(--gold)); }
+    .funnel-level.active, .funnel-level:hover { border-color: var(--border2); background: rgba(108,71,255,0.07); }
+    .funnel-level-label { font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--violet-l); margin-bottom: .25rem; }
+    .funnel-level.f-spirit .funnel-level-label { color: var(--gold); }
+    .funnel-level.f-philo  .funnel-level-label { color: #38BDF8; }
+    .funnel-level-title { font-family: var(--font-h); font-size: 1rem; color: var(--white); }
+    .funnel-level-count { font-size: .72rem; color: var(--muted); margin-top: .2rem; }
+    .funnel-content {
+      background: var(--glass); backdrop-filter: blur(16px);
+      border: 1px solid var(--border2); border-radius: 20px;
+      padding: 2rem; min-height: 380px;
+    }
+    .funnel-pane { display: none; }
+    .funnel-pane.active { display: block; }
+    .domain-title { font-family: var(--font-h); font-size: 1.5rem; color: var(--white); margin-bottom: .5rem; font-weight: normal; }
+    .domain-apport {
+      font-size: .85rem; color: var(--muted);
+      padding: .8rem 1rem;
+      background: rgba(108,71,255,0.06);
+      border-left: 2px solid var(--violet-d);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 1rem 0 1.5rem; line-height: 1.65;
+    }
+    .domain-apport strong { color: var(--text); }
+    .concepts-list { display: flex; flex-direction: column; gap: .5rem; }
+    .concept-item {
+      display: flex; align-items: center; gap: .8rem;
+      padding: .75rem 1rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      cursor: pointer; transition: all .2s;
+      font-size: .875rem; color: var(--text);
+    }
+    .concept-item:hover { border-color: var(--border2); color: var(--white); background: rgba(108,71,255,0.07); }
+    .concept-emoji { font-size: 1.05rem; width: 26px; text-align: center; flex-shrink: 0; }
+    .concept-name { flex: 1; }
+    .concept-arrow { color: var(--muted); font-size: .8rem; transition: transform .2s, color .2s; }
+    .concept-item:hover .concept-arrow { transform: translateX(4px); color: var(--violet-l); }
+
+    /* ── BIBLIOTHÈQUE ──────────────────────────────────────── */
+    #fiches { padding: 6rem 0; }
+    .fiches-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .niveau-tabs {
+      display: flex; gap: .4rem;
+      background: rgba(21,28,51,0.8);
+      padding: .3rem; border-radius: 50px;
+      border: 1px solid var(--border);
+    }
+    .niveau-tab {
+      padding: .38rem 1rem; border-radius: 50px;
+      font-size: .78rem; font-weight: 500;
+      cursor: pointer; border: none;
+      background: transparent; color: var(--muted); transition: all .2s;
+    }
+    .niveau-tab.active { background: var(--card); color: var(--white); box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+    .niveau-tab:hover:not(.active) { color: var(--text); }
+    .fiches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
+    .fiche-card {
+      background: var(--glass); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.6rem; transition: all .25s; cursor: pointer;
+      display: flex; flex-direction: column; gap: .8rem;
+      position: relative; overflow: hidden;
+    }
+    .fiche-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px; opacity: 0; transition: opacity .25s;
+    }
+    .fiche-card.eveil::after      { background: var(--eveil); }
+    .fiche-card.exploration::after { background: var(--exploration); }
+    .fiche-card.integration::after { background: var(--integration); }
+    .fiche-card:hover { transform: translateY(-3px); border-color: var(--border2); box-shadow: var(--shadow); }
+    .fiche-card:hover::after { opacity: 1; }
+    .fiche-card.read {
+      border-color: rgba(34,197,94,0.45);
+      background: linear-gradient(180deg, rgba(34,197,94,0.08), rgba(21,28,51,0.7));
+    }
+    .fiche-read-chip {
+      margin-left: auto;
+      font-size: .64rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #4ADE80;
+    }
+    .fiche-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .fiche-emoji { font-size: 1.6rem; }
+    .fiche-niveau { display: inline-flex; align-items: center; gap: .3rem; font-size: .68rem; font-weight: 700; padding: .22rem .6rem; border-radius: 50px; }
+    .fiche-niveau.eveil       { background: var(--eveil-bg);       color: var(--eveil); }
+    .fiche-niveau.exploration { background: var(--exploration-bg); color: var(--exploration); }
+    .fiche-niveau.integration { background: var(--integration-bg); color: var(--integration); }
+    .fiche-title { font-family: var(--font-h); font-size: 1.05rem; color: var(--white); line-height: 1.35; }
+    .fiche-excerpt { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+    .fiche-card-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: .8rem; border-top: 1px solid var(--border); }
+    .fiche-pilier { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+    .fiche-pilier.neuro  { color: var(--violet-l); }
+    .fiche-pilier.philo  { color: #38BDF8; }
+    .fiche-pilier.spirit { color: var(--gold); }
+    .fiche-arrow { color: var(--muted); font-size: .9rem; transition: transform .2s, color .2s; }
+    .fiche-card:hover .fiche-arrow { transform: translateX(4px); color: var(--violet-l); }
+
+    /* ── MODAL ─────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(10px);
+      display: none; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--card); border: 1px solid var(--border2); border-radius: 20px;
+      padding: 2.5rem; max-width: 560px; width: 100%;
+      max-height: 82vh; overflow-y: auto; position: relative;
+      animation: modalIn .3s ease;
+    }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .modal-close {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      background: transparent; border: none; color: var(--muted); font-size: 1.1rem;
+      cursor: pointer; transition: color .2s;
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    }
+    .modal-close:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+    .modal-emoji  { font-size: 2.4rem; margin-bottom: .7rem; }
+    .modal-meta   { font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--violet-l); margin-bottom: .4rem; }
+    .modal-title  { font-family: var(--font-h); font-size: 1.8rem; color: var(--white); margin-bottom: .3rem; line-height: 1.2; font-weight: normal; }
+    .modal-sous   { font-size: .9rem; color: var(--muted); font-style: italic; margin-bottom: 1.4rem; }
+    .modal-section-label { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--violet-l); margin-bottom: .5rem; }
+    .modal-body   { font-size: .88rem; color: var(--text); line-height: 1.75; margin-bottom: 1.2rem; }
+    .modal-insight {
+      background: rgba(108,71,255,0.07); border-left: 2px solid var(--violet-d);
+      padding: .9rem 1.1rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: .85rem; color: var(--text); line-height: 1.65; font-style: italic; margin-bottom: 1.5rem;
+    }
+    .modal-actions { display: flex; gap: .7rem; flex-wrap: wrap; }
+    .modal-btn { padding: .55rem 1.2rem; border-radius: 50px; font-size: .8rem; font-weight: 500; cursor: pointer; transition: all .2s; font-family: var(--font-b); }
+    .modal-btn.primary { background: var(--violet); border: 1px solid var(--violet); color: white; }
+    .modal-btn.primary:hover { background: var(--violet-l); }
+    .modal-btn.ghost   { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .modal-btn.ghost:hover { border-color: var(--border2); color: var(--white); }
+    .btn-notebook {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: .5rem;
+      padding: .45rem 1rem; border-radius: 50px;
+      border: 1px solid var(--gold); color: var(--gold);
+      font-size: .8rem; font-weight: 600;
+      background: rgba(240,180,41,0.08);
+      transition: all .2s; text-decoration: none;
+    }
+    .btn-notebook:hover { background: rgba(240,180,41,0.18); transform: translateY(-1px); }
+
+    /* ── WELCOME MODAL ─────────────────────────────────────── */
+    #welcome-modal {
+      position: fixed; inset: 0; z-index: 600;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(10px);
+      display: none; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    #welcome-modal.open { display: flex; }
+    #welcome-modal .wm-box {
+      background: var(--card); border: 1px solid var(--border2); border-radius: var(--radius);
+      padding: 2.5rem; max-width: 580px; width: 100%;
+      max-height: 88vh; overflow-y: auto; position: relative;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    #welcome-modal.open .wm-box { opacity: 1; transform: none; }
+    #welcome-modal .wm-close {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      background: transparent; border: none; color: var(--muted); font-size: 1.1rem;
+      cursor: pointer; transition: color .2s;
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    }
+    #welcome-modal .wm-close:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+    #welcome-modal .wm-title {
+      font-family: var(--font-h); font-size: clamp(1.3rem, 3vw, 1.7rem);
+      color: var(--white); line-height: 1.3; margin-bottom: 1.6rem; padding-right: 2rem;
+    }
+    #welcome-modal .wm-title span { color: var(--gold); }
+    #welcome-modal .wm-blocks { display: flex; flex-direction: column; gap: .9rem; margin-bottom: 1.8rem; }
+    #welcome-modal .wm-block {
+      background: rgba(108,71,255,0.06); border: 1px solid rgba(108,71,255,0.15);
+      border-radius: var(--radius-sm); padding: 1rem 1.1rem;
+      display: flex; gap: .85rem; align-items: flex-start;
+    }
+    #welcome-modal .wm-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.4; }
+    #welcome-modal .wm-text { font-size: .88rem; color: var(--text); line-height: 1.65; }
+    #welcome-modal .wm-text strong { color: var(--white); font-weight: 600; }
+    #welcome-modal .wm-arrow {
+      display: inline-block; width: 6px; height: 6px;
+      border-right: 1.5px solid var(--violet-l); border-bottom: 1.5px solid var(--violet-l);
+      transform: rotate(-45deg); margin: 0 .4rem .05rem;
+    }
+    #welcome-modal .wm-actions { display: flex; flex-direction: column; gap: .75rem; align-items: flex-start; }
+    #welcome-modal .wm-btn-primary {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: var(--violet); color: white; border: none;
+      padding: .7rem 1.5rem; border-radius: 50px; font-size: .9rem; font-weight: 600;
+      cursor: pointer; transition: background .2s; font-family: var(--font-b);
+    }
+    #welcome-modal .wm-btn-primary:hover { background: var(--violet-l); }
+    #welcome-modal .wm-link-secondary {
+      font-size: .83rem; color: var(--muted); cursor: pointer;
+      background: none; border: none; font-family: var(--font-b);
+      text-decoration: underline; text-underline-offset: 3px; transition: color .2s;
+      padding: 0;
+    }
+    #welcome-modal .wm-link-secondary:hover { color: var(--text); }
+
+    /* ── LECTURES ──────────────────────────────────────────── */
+    #lectures {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, transparent, rgba(15,22,41,0.5) 50%, transparent);
+    }
+    .lectures-header { margin-bottom: 1.5rem; }
+    .livre-tag { font-size: .65rem; padding: .2rem .55rem; border-radius: 50px; background: rgba(108,71,255,0.08); border: 1px solid rgba(108,71,255,0.2); color: var(--violet-l); }
+
+    /* Livres — onglets domaine */
+    .livres-filter-bar { margin-bottom: 2rem; }
+    .livres-tabs { display: inline-flex; gap: .4rem; background: rgba(21,28,51,0.8); padding: .3rem; border-radius: 50px; border: 1px solid var(--border); flex-wrap: wrap; }
+    .livres-tab { padding: .38rem 1rem; border-radius: 50px; font-size: .78rem; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all .2s; font-family: var(--font-b); }
+    .livres-tab.active { background: var(--card); color: var(--white); box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+    .livres-tab:hover:not(.active) { color: var(--text); }
+
+    /* Livres — rangées Netflix */
+    .domaine-row { margin-bottom: 2.5rem; transition: opacity .3s ease, max-height .4s ease; max-height: 2000px; overflow: hidden; }
+    .domaine-row.domaine-hidden { opacity: 0; max-height: 0; margin-bottom: 0; pointer-events: none; }
+    .domaine-row-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .domaine-icon { font-size: 1.2rem; }
+    .domaine-label { font-size: 1rem; font-weight: 700; color: var(--white); }
+    .domaine-count { font-size: .8rem; color: var(--muted); }
+    .domaine-arrows { display: flex; gap: .5rem; margin-left: auto; }
+    .arrow-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--white); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; line-height: 1; padding: 0; font-family: var(--font-b); }
+    .arrow-btn:hover:not(:disabled) { background: var(--violet); border-color: transparent; }
+    .arrow-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .domaine-track-wrapper { overflow: hidden; position: relative; }
+    .domaine-track-wrapper::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: linear-gradient(to right, transparent, var(--night)); pointer-events: none; z-index: 2; }
+    .domaine-track { display: flex; gap: 1.2rem; overflow-x: scroll; scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+    .domaine-track::-webkit-scrollbar { display: none; }
+
+    /* Carte livre */
+    .livre-card { flex-shrink: 0; width: 280px; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; scroll-snap-align: start; background: var(--card); display: flex; flex-direction: column; }
+    .livre-card:hover { transform: scale(1.03); box-shadow: 0 8px 32px rgba(108,71,255,0.35); border-color: var(--violet); }
+    .livre-card-header { height: 80px; position: relative; display: flex; align-items: flex-end; justify-content: flex-end; padding: .8rem 1rem; overflow: hidden; }
+    .domaine-header-sciences  { background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.06)); }
+    .domaine-header-philo     { background: linear-gradient(135deg, rgba(108,71,255,0.25), rgba(108,71,255,0.06)); }
+    .domaine-header-spirituel { background: linear-gradient(135deg, rgba(34,197,94,0.25), rgba(34,197,94,0.06)); }
+    .livre-card-num { font-family: var(--font-h); font-size: 3.5rem; font-weight: normal; color: rgba(255,255,255,0.15); line-height: 1; position: absolute; bottom: -.3rem; left: .8rem; pointer-events: none; }
+    .livre-card-icon { font-size: 1.4rem; position: relative; z-index: 1; }
+    .livre-card-body { padding: 1rem; display: flex; flex-direction: column; gap: .4rem; flex: 1; }
+    .livre-niveau-badge { display: inline-block; font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: .18rem .55rem; border-radius: 50px; width: fit-content; }
+    .livre-niveau-badge.eveil       { background: var(--eveil-bg);       color: var(--eveil); }
+    .livre-niveau-badge.exploration { background: var(--exploration-bg); color: var(--exploration); }
+    .livre-niveau-badge.integration { background: var(--integration-bg); color: var(--integration); }
+    .livre-titre  { font-family: var(--font-h); font-size: 1rem; color: var(--white); line-height: 1.3; font-weight: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .livre-auteur { font-size: .8rem; color: var(--muted); font-style: italic; }
+    .livre-apport { font-size: .82rem; color: var(--text); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .livre-tags   { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .2rem; }
+    .livre-discover-btn { margin-top: auto; padding: .6rem 1rem; width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border); background: transparent; color: var(--text); font-size: .82rem; font-weight: 500; cursor: pointer; transition: all .25s ease; font-family: var(--font-b); }
+    .livre-discover-btn:hover, .livre-card:hover .livre-discover-btn { background: var(--violet); border-color: var(--violet); color: white; }
+
+    /* Scroll dots (mobile) */
+    .domaine-dots { display: none; justify-content: center; gap: .4rem; margin-top: .8rem; }
+    .domaine-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background .2s, width .2s; }
+    .domaine-dots .dot.active { background: var(--violet); width: 16px; border-radius: 3px; }
+    @media (max-width: 640px) { .domaine-arrows { display: none; } .domaine-dots { display: flex; } }
+
+    /* ── DIAGNOSTIC ────────────────────────────────────────── */
+    #diagnostic {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, transparent, rgba(108,71,255,0.05) 50%, transparent);
+    }
+    .diagnostic-header { text-align: center; margin-bottom: 3rem; }
+    .diag-card {
+      background: var(--glass); backdrop-filter: blur(16px);
+      border: 1px solid var(--border2); border-radius: 20px;
+      padding: 2.5rem; max-width: 700px; margin: 0 auto;
+    }
+    .diag-progress { display: flex; gap: .35rem; margin-bottom: 2.2rem; }
+    .diag-bar { height: 4px; flex: 1; border-radius: 2px; background: var(--border); transition: background .4s; }
+    .diag-bar.done    { background: var(--violet); }
+    .diag-bar.current { background: linear-gradient(90deg, var(--violet), var(--violet-l)); }
+    .diag-question { font-family: var(--font-h); font-size: 1.3rem; color: var(--white); line-height: 1.4; margin-bottom: 1.5rem; }
+    .diag-options { display: flex; flex-direction: column; gap: .65rem; }
+    .diag-opt {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1rem 1.2rem;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      cursor: pointer; transition: all .2s; text-align: left; width: 100%;
+    }
+    .diag-opt:hover { border-color: var(--violet-l); background: rgba(108,71,255,0.07); }
+    .diag-opt.selected { border-color: var(--violet); background: rgba(108,71,255,0.12); }
+    .diag-opt-circle {
+      width: 28px; height: 28px; min-width: 28px; border-radius: 50%;
+      border: 1px solid var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; color: var(--muted);
+      transition: all .2s; flex-shrink: 0;
+    }
+    .diag-opt.selected .diag-opt-circle { background: var(--violet); border-color: var(--violet); color: white; }
+    .diag-opt-text { font-size: .9rem; color: var(--text); line-height: 1.5; }
+    .diag-opt.selected .diag-opt-text { color: var(--white); }
+    .diag-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.8rem; }
+    .diag-counter { font-size: .78rem; color: var(--muted); }
+    .diag-next {
+      background: var(--violet); color: white;
+      border: none; padding: .65rem 1.5rem; border-radius: 50px;
+      font-size: .875rem; font-weight: 600; cursor: pointer; transition: all .2s; font-family: var(--font-b);
+    }
+    .diag-next:hover:not(:disabled) { background: var(--violet-l); transform: translateY(-1px); }
+    .diag-next:disabled { opacity: .35; cursor: default; }
+    .diag-result { display: none; text-align: center; padding: .5rem 0; }
+    .result-icon  { font-size: 3.5rem; margin-bottom: .6rem; }
+    .result-level { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--violet-l); margin-bottom: .4rem; }
+    .result-title { font-family: var(--font-h); font-size: 1.7rem; color: var(--white); margin-bottom: .6rem; font-weight: normal; }
+    .result-desc  { font-size: .92rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.4rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+    .result-tags  { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; margin-bottom: 1.8rem; }
+    .result-tag   { font-size: .72rem; padding: .28rem .75rem; border-radius: 50px; background: rgba(108,71,255,0.1); border: 1px solid var(--border2); color: var(--violet-l); }
+    .diag-restart {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      font-size: .78rem; padding: .45rem 1rem; border-radius: 50px;
+      cursor: pointer; transition: all .2s; font-family: var(--font-b); margin-top: .8rem; display: inline-block;
+    }
+    .diag-restart:hover { border-color: var(--border2); color: var(--text); }
+
+    /* ── PROGRESSION ───────────────────────────────────────── */
+    #progression { padding: 6rem 0; }
+    .progression-header { margin-bottom: 3rem; }
+    .xp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+    .xp-card { background: var(--glass); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; }
+    .xp-card-title { font-family: var(--font-h); font-size: 1.25rem; color: var(--white); margin-bottom: 1.5rem; font-weight: normal; }
+    .xp-bar-wrap { margin-bottom: 1.2rem; }
+    .xp-bar-label { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); margin-bottom: .45rem; }
+    .xp-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .xp-bar-fill { height: 100%; border-radius: 3px; width: 0; transition: width 1.4s cubic-bezier(.4,0,.2,1); }
+    .xp-bar-fill.eveil       { background: linear-gradient(90deg, #16A34A, var(--eveil)); }
+    .xp-bar-fill.exploration { background: linear-gradient(90deg, #0284C7, var(--exploration)); }
+    .xp-bar-fill.integration { background: linear-gradient(90deg, #D97706, var(--integration)); }
+    .streak-section { margin-top: 1.6rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
+    .streak-meta { display: flex; justify-content: space-between; align-items: center; font-size: .75rem; margin-bottom: .65rem; }
+    .streak-label { color: var(--muted); }
+    .streak-count { color: var(--violet-l); font-weight: 600; }
+    .streak-days  { display: flex; gap: .3rem; }
+    .streak-day { flex: 1; height: 30px; border-radius: 5px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); transition: all .3s; }
+    .streak-day.done  { background: rgba(108,71,255,0.25); border-color: var(--violet-d); }
+    .streak-day.today { background: linear-gradient(135deg, var(--violet-d), var(--violet-l)); border-color: var(--violet-l); box-shadow: 0 0 12px rgba(108,71,255,0.35); }
+    .streak-day-labels { display: flex; gap: .3rem; margin-top: .35rem; }
+    .streak-day-labels span { flex: 1; text-align: center; font-size: .6rem; color: var(--muted); letter-spacing: .04em; }
+    .badges-grid { display: flex; flex-wrap: wrap; gap: .65rem; margin-bottom: 1.4rem; }
+    .badge-item {
+      display: flex; flex-direction: column; align-items: center; gap: .35rem;
+      padding: .9rem .7rem; background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      width: 76px; cursor: pointer; transition: all .2s; opacity: .35;
+    }
+    .badge-item.unlocked { opacity: 1; border-color: var(--border2); background: rgba(108,71,255,0.06); }
+    .badge-item.unlocked:hover { border-color: var(--violet-l); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,71,255,0.15); }
+    .badge-emoji { font-size: 1.5rem; }
+    .badge-name  { font-size: .6rem; color: var(--muted); text-align: center; line-height: 1.35; }
+    .badge-item.unlocked .badge-name { color: var(--text); }
+    .next-step-box { margin-top: 1.5rem; padding: 1rem 1.1rem; background: rgba(108,71,255,0.06); border: 1px solid var(--border2); border-radius: var(--radius-sm); }
+    .next-step-label { font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--violet-l); margin-bottom: .35rem; }
+    .next-step-text { font-size: .85rem; color: var(--text); line-height: 1.55; }
+    .next-step-text strong { color: var(--exploration); }
+
+    /* ── CTA FINAL ─────────────────────────────────────────── */
+    #cta-final { padding: 6rem 0; text-align: center; }
+    .cta-box {
+      max-width: 620px; margin: 0 auto;
+      background: linear-gradient(135deg, rgba(108,71,255,0.12), rgba(240,180,41,0.05));
+      border: 1px solid rgba(108,71,255,0.25); border-radius: 20px; padding: 3.5rem 2.5rem;
+    }
+    .cta-box .section-title { margin-bottom: 1rem; }
+    .cta-box p { color: var(--muted); font-size: 1rem; line-height: 1.75; margin-bottom: 2rem; max-width: 460px; margin-left: auto; margin-right: auto; }
+    .cta-box p strong { color: var(--text); }
+
+    /* ── FOOTER ────────────────────────────────────────────── */
+    footer { padding: 2.5rem 0; border-top: 1px solid var(--border); text-align: center; }
+    footer p { font-size: .8rem; color: var(--muted); }
+    footer a  { color: var(--violet-l); }
+    footer a:hover { color: var(--gold-l); }
+    .legal-note {
+      margin-top: .6rem;
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding-top: 5rem; }
+      .ecosystem-map { display: none; }
+      .funnel-wrap { grid-template-columns: 1fr; }
+      .lectures-grid { grid-template-columns: 1fr; }
+      .xp-grid { grid-template-columns: 1fr; }
+      nav { padding: .75rem 1rem; }
+      .nav-toggle { display: inline-flex; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: calc(100% + 1px);
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: rgba(10,14,26,0.98);
+        border-bottom: 1px solid var(--border2);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a {
+        display: block;
+        padding: .95rem 1rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+      }
+      .nav-links .nav-cta {
+        border-radius: 0;
+        text-align: center;
+        margin-top: .3rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      #particles { display: none !important; }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       REFONTE 2026
+       ══════════════════════════════════════════════════════════ */
+
+    /* ── HERO REFONTE ───────────────────────────────────────── */
+    .hero-cta-secondary {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: none; border: none; padding: 0;
+      font-size: .9rem; color: var(--muted); cursor: pointer;
+      font-family: var(--font-b); text-decoration: none;
+      transition: color .2s;
+    }
+    .hero-cta-secondary:hover { color: var(--violet-l); }
+    .hero-actions-refonte {
+      display: flex; flex-direction: column; gap: .8rem;
+      align-items: flex-start; margin-bottom: 2rem;
+    }
+
+    /* ── SECTION #POURQUOI ──────────────────────────────────── */
+    #pourquoi {
+      padding: 5rem 0;
+      background: linear-gradient(180deg, transparent, rgba(15,22,41,0.6) 30%, rgba(15,22,41,0.6) 70%, transparent);
+      position: relative; z-index: 1;
+    }
+    .pourquoi-inner {
+      max-width: 650px;
+      margin: 0 auto;
+      text-align: center;
+      line-height: 1.85;
+      font-size: .96rem;
+      color: var(--muted);
+      padding: 0 1.5rem;
+    }
+    .pourquoi-inner p { margin-bottom: 1rem; }
+    .pourquoi-inner p:last-child { margin-bottom: 0; }
+    .pourquoi-inner strong { color: var(--text); font-weight: 600; }
+
+    /* ── ENTONNOIR ACCORDÉONS ───────────────────────────────── */
+    .accordion-domains { display: flex; flex-direction: column; gap: .8rem; }
+    .accordion-card {
+      background: var(--glass); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; transition: border-color .25s;
+    }
+    .accordion-card.open { border-color: var(--border2); }
+    .accordion-trigger {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.2rem 1.4rem;
+      cursor: pointer; width: 100%; background: transparent; border: none;
+      text-align: left; font-family: var(--font-b); color: var(--white);
+      transition: background .2s; position: relative;
+    }
+    .accordion-trigger:hover { background: rgba(108,71,255,0.05); }
+    .accordion-card.open .accordion-trigger { background: rgba(108,71,255,0.07); }
+    .accordion-domain-badge {
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; padding: .2rem .6rem; border-radius: 50px;
+      flex-shrink: 0;
+    }
+    .acc-neuro .accordion-domain-badge  { color: var(--violet-l); background: rgba(108,71,255,0.12); }
+    .acc-spirit .accordion-domain-badge { color: var(--gold); background: rgba(240,180,41,0.12); }
+    .acc-philo .accordion-domain-badge  { color: #38BDF8; background: rgba(8,145,178,0.12); }
+    .acc-soi .accordion-domain-badge    { color: var(--violet-l); background: rgba(108,71,255,0.08); }
+    .accordion-trigger-text { flex: 1; display: flex; flex-direction: column; }
+    .accordion-trigger-title {
+      font-family: var(--font-h); font-size: 1rem; color: var(--white); line-height: 1.2;
+    }
+    .accordion-trigger-count { font-size: .72rem; color: var(--muted); margin-top: .18rem; }
+    .accordion-arrow {
+      font-size: .85rem; color: var(--muted); flex-shrink: 0;
+      transition: transform .3s ease, color .2s;
+    }
+    .accordion-card.open .accordion-arrow { transform: rotate(180deg); color: var(--violet-l); }
+    .accordion-panel {
+      max-height: 0; overflow: hidden;
+      transition: max-height .4s cubic-bezier(.4,0,.2,1);
+    }
+    .accordion-panel-inner {
+      padding: 0 1.4rem 1.4rem;
+      border-top: 1px solid var(--border);
+    }
+    .accordion-domain-apport {
+      font-size: .85rem; color: var(--muted);
+      padding: .8rem 1rem;
+      background: rgba(108,71,255,0.04);
+      border-left: 2px solid var(--violet-d);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 1rem 0 1rem; line-height: 1.65;
+    }
+    .accordion-domain-apport strong { color: var(--text); }
+    .accordion-see-all {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: 1rem;
+      font-size: .82rem; font-weight: 600;
+      color: var(--violet-l); text-decoration: none;
+      background: rgba(108,71,255,0.08);
+      border: 1px solid rgba(108,71,255,0.2);
+      padding: .45rem 1rem; border-radius: 50px;
+      transition: all .2s;
+    }
+    .accordion-see-all:hover { background: rgba(108,71,255,0.18); transform: translateX(3px); }
+
+    /* ── PROGRESSION COMPACTE ───────────────────────────────── */
+    #progression.refonte { padding: 3rem 0; }
+    #progression.refonte .progression-header { margin-bottom: 1.5rem; }
+    .xp-compact-row {
+      display: flex; gap: 1.5rem; align-items: stretch; flex-wrap: wrap;
+    }
+    .xp-mini-block {
+      background: var(--glass); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.2rem 1.4rem; flex: 1; min-width: 200px;
+    }
+    .xp-mini-label { font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
+    .badges-scroll {
+      display: flex; gap: .6rem; overflow-x: auto;
+      scrollbar-width: none; -ms-overflow-style: none;
+      padding-bottom: 4px; scroll-snap-type: x mandatory;
+    }
+    .badges-scroll::-webkit-scrollbar { display: none; }
+    .badges-scroll .badge-item { scroll-snap-align: start; flex-shrink: 0; }
+
+    /* ── CTA FINAL DARK ─────────────────────────────────────── */
+    #cta-final.refonte { padding: 5rem 0; }
+    .cta-box-dark {
+      max-width: 560px; margin: 0 auto;
+      background: var(--deep);
+      border: 1px solid var(--border2);
+      border-radius: 20px; padding: 3rem 2.5rem;
+      text-align: center;
+    }
+    .cta-box-dark .section-title { margin-bottom: .8rem; font-size: clamp(1.4rem, 3vw, 2rem); }
+    .cta-box-dark .cta-sub {
+      color: var(--muted); font-size: .95rem;
+      line-height: 1.7; margin-bottom: 1.8rem;
+    }
+
+    @media (max-width: 600px) {
+      .pourquoi-inner { font-size: .92rem; }
+      .xp-compact-row { flex-direction: column; }
+      .cta-box-dark { padding: 2rem 1.2rem; }
+      .hero-actions-refonte { align-items: center; }
+    }
+
+    /* ── PORTRAIT & IDENTITÉ ──────────────────────────────────── */
+    #portrait {
+      padding: 6rem 0;
+      overflow: hidden;
+    }
+    .portrait-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .portrait-visual {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      max-height: 580px;
+      background: linear-gradient(135deg, rgba(108,71,255,0.12), rgba(10,14,26,0.95));
+    }
+    .portrait-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      will-change: transform;
+    }
+    .portrait-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10,14,26,0.05) 0%,
+        rgba(10,14,26,0.2) 60%,
+        rgba(10,14,26,0.55) 100%
+      );
+      pointer-events: none;
+    }
+    .portrait-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 7rem;
+      opacity: 0.18;
+    }
+    .portrait-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .identity-name {
+      font-family: var(--font-h);
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: bold;
+      color: var(--white);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+    .identity-tagline {
+      font-size: clamp(0.82rem, 1.4vw, 1.05rem);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--violet-l);
+      opacity: 0.85;
+      margin-bottom: 1.4rem;
+      font-weight: 600;
+    }
+    .identity-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 420px;
+    }
+    .identity-quote {
+      font-style: italic;
+      font-size: 1.2rem;
+      font-family: var(--font-h);
+      color: var(--cream);
+      border-left: 3px solid var(--gold);
+      padding-left: 1.2rem;
+      margin-top: 1.8rem;
+      line-height: 1.6;
+      opacity: 0.88;
+    }
+    @media (max-width: 900px) {
+      .portrait-wrap {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .portrait-visual {
+        max-height: 380px;
+        aspect-ratio: 16 / 9;
+      }
+    }
+
+    /* ── MON PROCESSUS ─────────────────────────────────────────── */
+    #mon-processus {
+      padding: 6rem 0 9rem;
+      background: linear-gradient(180deg, transparent, rgba(108,71,255,0.04) 50%, transparent);
+      position: relative;
+      overflow: hidden;
+    }
+    /* Couche texte au-dessus de la photo */
+    .processus-inner { position: relative; z-index: 1; }
+    .processus-header { margin-bottom: 4rem; }
+
+    /* Photo atmosphérique bas-gauche */
+    .processus-portrait {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: clamp(380px, 60%, 650px);
+      width: auto;
+      object-fit: contain;
+      object-position: bottom left;
+      pointer-events: none;
+      user-select: none;
+      z-index: 1;
+      /* Animation d'entrée */
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity 1.4s ease-out, transform 1.6s ease-out;
+      /* Fondu atmosphérique — le personnage émerge du fond */
+      -webkit-mask-image:
+        linear-gradient(to right, black 0%, black 60%, transparent 100%),
+        linear-gradient(to top,   transparent 0%, black 20%);
+      -webkit-mask-composite: destination-in;
+      mask-image:
+        linear-gradient(to right, black 0%, black 60%, transparent 100%),
+        linear-gradient(to top,   transparent 0%, black 20%);
+      mask-composite: intersect;
+    }
+    .processus-portrait.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Contenu textuel au-dessus de la photo */
+    .processus-portrait ~ * { position: relative; z-index: 2; }
+    /* Mobile : watermark discret */
+    @media (max-width: 768px) {
+      .processus-portrait { opacity: 0.08 !important; height: 50%; }
+    }
+    .processus-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+    .processus-steps::before {
+      content: '';
+      position: absolute;
+      top: 1.95rem;
+      left: 12.5%;
+      right: 12.5%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--violet-d), var(--violet-l), var(--gold));
+      opacity: 0.25;
+      z-index: 0;
+    }
+    .processus-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 1.2rem;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .processus-step.step-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .processus-step:nth-child(1) { transition-delay: 0s; }
+    .processus-step:nth-child(2) { transition-delay: 0.15s; }
+    .processus-step:nth-child(3) { transition-delay: 0.30s; }
+    .processus-step:nth-child(4) { transition-delay: 0.45s; }
+    .step-number {
+      width: 3.8rem;
+      height: 3.8rem;
+      border-radius: 50%;
+      background: var(--card);
+      border: 2px solid var(--violet);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-h);
+      font-size: 1.2rem;
+      color: var(--violet-l);
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 20px rgba(108,71,255,0.18);
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+    .processus-step:hover .step-number {
+      background: rgba(108,71,255,0.14);
+      box-shadow: 0 0 36px rgba(108,71,255,0.32);
+      transform: scale(1.1);
+    }
+    .step-title {
+      font-family: var(--font-h);
+      font-size: 1.05rem;
+      color: var(--white);
+      margin-bottom: 0.65rem;
+      line-height: 1.3;
+    }
+    .step-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    @media (max-width: 768px) {
+      .processus-steps {
+        grid-template-columns: 1fr;
+        gap: 2.2rem;
+      }
+      .processus-steps::before {
+        top: 0;
+        bottom: 0;
+        left: 1.85rem;
+        right: auto;
+        width: 1px;
+        height: auto;
+        background: linear-gradient(180deg, var(--violet-d), var(--violet-l), var(--gold));
+      }
+      .processus-step {
+        flex-direction: row;
+        text-align: left;
+        align-items: flex-start;
+        gap: 1.5rem;
+      }
+      .step-number { margin-bottom: 0; }
+    }
+
+    /* === ACCORDÉONS PREMIUM — REFONTE 2026 === */
+
+    /* Corps dépliable */
+    .accordion-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition:
+        grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.4s ease 0.05s;
+    }
+
+    .accordion-body.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .accordion-inner {
+      overflow: hidden;
+    }
+
+    /* Bouton toggle */
+    .toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+      padding: 0.55rem 1.3rem 0.55rem 1.5rem;
+      background: transparent;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      opacity: 0.65;
+      transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      color: var(--text);
+    }
+
+    /* Effet shimmer au hover */
+    .toggle-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      border-radius: inherit;
+    }
+
+    .toggle-btn:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px -4px currentColor;
+    }
+
+    .toggle-btn:hover::before {
+      opacity: 0.06;
+    }
+
+    .toggle-btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .toggle-btn:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 4px;
+    }
+
+    /* Flèche animée */
+    .btn-arrow {
+      display: inline-block;
+      font-style: normal;
+      font-size: 1em;
+      line-height: 1;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: center;
+    }
+
+    .toggle-btn[aria-expanded="true"] .btn-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* Label du bouton — micro-fondu au changement */
+    .btn-label {
+      transition: opacity 0.15s ease;
+    }
+
+    .toggle-btn:active .btn-label {
+      opacity: 0.6;
+    }
+
+    .accordion-header {
+      cursor: default;
+    }
+
+    .accordion-summary {
+      font-size: .95rem;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 600px;
+      margin-top: .6rem;
+    }
+
+    /* CTA LINK (progression) — REFONTE 2026 */
+    .cta-link {
+      display: inline-block;
+      padding: .85rem 1.8rem;
+      background: var(--violet); color: white;
+      border-radius: 50px; font-weight: 600; font-size: .95rem;
+      text-decoration: none; transition: all .2s;
+    }
+    .cta-link:hover { background: var(--violet-l); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,71,255,0.35); }
+
+    @media (max-width: 768px) {
+      .toggle-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.85rem 1rem;
+        font-size: 0.95rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<a href="#hero" class="skip-link">Aller au contenu</a>
+
+<canvas id="particles"></canvas>
+
+<!-- ── NAV ───────────────────────────────────────────────────── -->
+<nav>
+  <a class="nav-logo" href="#hero">Potentiel <span>Caché</span> Révélé</a>
+  <button class="nav-toggle" aria-expanded="false" aria-controls="navLinks" onclick="toggleMobileNav()">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a href="#entonnoir">Explorer</a>
+    <a href="#fiches">Fiches</a>
+    <a href="#lectures">Lectures</a>
+    <a href="progression.html">Progression</a>
+    <a href="process.html">Mon Processus</a>
+    <a href="#diagnostic" class="nav-cta">→ Mon parcours</a>
+  </div>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────── -->
+<section id="hero">
+
+  <div class="hero-col">
+    <div class="hero-eyebrow">Neurosciences · Philosophie · Transformation</div>
+    <h1 class="hero-title">La connaissance de soi<br><em>rendue navigable.</em></h1>
+    <p class="hero-sub">Tu comprends déjà beaucoup. Tu te demandes pourquoi ça ne change pas vraiment.<br>Ce site n'est pas une ressource de plus — c'est la structure qui manquait entre ce que tu sais et qui tu deviens.</p>
+    <div class="hero-actions-refonte">
+      <a class="btn-primary" href="#diagnostic">Faire le diagnostic — 3 min</a>
+      <a class="hero-cta-secondary" href="#entonnoir">ou explorer les concepts →</a>
+    </div>
+  </div>
+
+  <div class="ecosystem-map" id="ecoMap">
+    <svg class="eco-svg" viewBox="0 0 700 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="350" y1="350" x2="350" y2="100" stroke="rgba(108,71,255,0.25)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="350" y1="350" x2="640" y2="490" stroke="rgba(240,180,41,0.2)"  stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="350" y1="350" x2="60"  y2="490" stroke="rgba(8,145,178,0.2)"   stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="350" y1="100" x2="640" y2="490" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      <line x1="640" y1="490" x2="60"  y2="490" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      <line x1="60"  y1="490" x2="350" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      <circle cx="350" cy="350" r="250" stroke="rgba(108,71,255,0.07)" stroke-width="1" stroke-dasharray="2 8"/>
+    </svg>
+
+    <div class="eco-center" onclick="document.getElementById('diagnostic').scrollIntoView({behavior:'smooth'})">
+      <div class="center-emoji">🪞</div>
+      <div class="center-label">Connais-toi<br>toi-même</div>
+      <div class="center-sub">→ Mon parcours</div>
+    </div>
+
+    <div class="eco-node neuro" style="top:14.3%;left:50%" onclick="toggleSubs('neuro')">
+      <div class="eco-node-inner">
+        <div class="eco-node-emoji">🧠</div>
+        <div class="eco-node-label">Sciences<br>Humaines</div>
+        <div class="eco-node-count">12 concepts</div>
+      </div>
+    </div>
+    <div class="eco-node spirit" style="top:70%;left:91.4%" onclick="toggleSubs('spirit')">
+      <div class="eco-node-inner">
+        <div class="eco-node-emoji">✨</div>
+        <div class="eco-node-label">Spiritualité<br>Laïque</div>
+        <div class="eco-node-count">8 concepts</div>
+      </div>
+    </div>
+    <div class="eco-node philo" style="top:70%;left:8.6%" onclick="toggleSubs('philo')">
+      <div class="eco-node-inner">
+        <div class="eco-node-emoji">⚖️</div>
+        <div class="eco-node-label">Philosophie<br>Pratique</div>
+        <div class="eco-node-count">9 concepts</div>
+      </div>
+    </div>
+
+    <div class="eco-sub" id="sub-neuro-1" style="top:6%;left:33%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">⚡</div>Neuro-<br>plasticité</div>
+    </div>
+    <div class="eco-sub" id="sub-neuro-2" style="top:6%;left:67%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">🎯</div>Biais<br>cognitifs</div>
+    </div>
+    <div class="eco-sub" id="sub-neuro-3" style="top:22%;left:22%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">🔄</div>Habitudes<br>& Boucles</div>
+    </div>
+    <div class="eco-sub" id="sub-neuro-4" style="top:22%;left:78%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">🌊</div>Flexibilité<br>psy.</div>
+    </div>
+    <div class="eco-sub" id="sub-spirit-1" style="top:56%;left:98%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">🪞</div>Individu-<br>ation</div>
+    </div>
+    <div class="eco-sub" id="sub-spirit-2" style="top:82%;left:98%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">💎</div>Valeurs<br>profondes</div>
+    </div>
+    <div class="eco-sub" id="sub-spirit-3" style="top:90%;left:78%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">🌿</div>Sérénité</div>
+    </div>
+    <div class="eco-sub" id="sub-philo-1" style="top:56%;left:2%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">⚖️</div>Contrôle &<br>Accept.</div>
+    </div>
+    <div class="eco-sub" id="sub-philo-2" style="top:82%;left:2%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">🏛️</div>Stoïcisme<br>pratique</div>
+    </div>
+    <div class="eco-sub" id="sub-philo-3" style="top:90%;left:22%">
+      <div class="eco-sub-inner"><div class="eco-sub-emoji">🎭</div>ACT &<br>Valeurs</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- AJOUT : Portrait + Identité -->
+<section id="portrait">
+  <div class="container">
+    <div class="portrait-wrap">
+
+      <div class="portrait-visual reveal">
+        <img
+          class="portrait-img"
+          src="alex_photo.png"
+          alt="Alexandre Mafille — Explorateur du potentiel humain"
+          onerror="this.style.display='none'; this.closest('.portrait-visual').querySelector('.portrait-fallback').style.display='flex';"
+        />
+        <div class="portrait-overlay"></div>
+        <div class="portrait-fallback">🪞</div>
+      </div>
+
+      <div class="portrait-text reveal reveal-delay-1">
+        <div class="section-tag">À propos</div>
+        <h2 class="identity-name">Alexandre Mafille</h2>
+        <p class="identity-tagline">Explorateur du potentiel humain</p>
+        <p class="identity-desc">
+          Passionné par l'intersection entre les neurosciences, la philosophie pratique
+          et la connaissance de soi. Je crois que chaque individu porte en lui un potentiel
+          caché — et que la transformation durable commence par la compréhension de ce qui
+          nous constitue vraiment.
+        </p>
+        <blockquote class="identity-quote">
+          <em>« Jamais parfait, toujours meilleur »</em>
+        </blockquote>
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- FIN AJOUT : Portrait + Identité -->
+
+<!-- ── LA DOULEUR NOMMÉE ──────────────────────────────────────── -->
+<section id="pourquoi">
+  <div class="container">
+    <div class="pourquoi-inner reveal">
+      <p>Nous vivons dans une époque où l'information sur la connaissance de soi n'a jamais été aussi accessible.</p>
+      <p>Et pourtant : lire ne change pas les comportements.<br>
+      Nous sommes une génération qui comprend ses traumas, connaît ses biais cognitifs — et les reproduit quand même.</p>
+      <p>Pas par faiblesse. Par manque de structure d'intégration.</p>
+      <p><strong>Ce site est conçu pour ça.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ENTONNOIR ──────────────────────────────────────────────── -->
+<section id="entonnoir">
+  <div class="container">
+    <div class="entonnoir-header reveal">
+      <div class="section-tag">Navigation</div>
+      <h2 class="section-title">Du général au <em style="font-style:italic;color:var(--violet-l)">précis</em></h2>
+      <p class="section-sub">Chaque domaine est un entonnoir pédagogique. Tu pars du grand principe et tu descends vers le concept actionnable.</p>
+    </div>
+
+    <div class="accordion-domains reveal reveal-delay-1">
+
+      <!-- Sciences Humaines -->
+      <div class="accordion-card acc-neuro" id="acc-sciences">
+        <button class="accordion-trigger" onclick="toggleAccordion('sciences')" aria-expanded="false" aria-controls="panel-sciences">
+          <span class="accordion-domain-badge">Sciences Humaines</span>
+          <span class="accordion-trigger-text">
+            <span class="accordion-trigger-title">🧠 Psychologie & Neurosciences</span>
+            <span class="accordion-trigger-count">12 concepts · 5 fiches</span>
+          </span>
+          <span class="accordion-arrow" aria-hidden="true">▾</span>
+        </button>
+        <div class="accordion-panel" id="panel-sciences" role="region" aria-labelledby="acc-sciences">
+          <div class="accordion-panel-inner">
+            <div class="accordion-domain-apport">Ce domaine t'explique <strong>comment ton cerveau fonctionne vraiment</strong> — et comment exploiter sa plasticité pour changer durablement, apprendre plus vite et te libérer de tes automatismes.</div>
+            <div class="concepts-list">
+              <div class="concept-item" onclick="openFiche('automaticite')"><span class="concept-emoji">⚡</span><span class="concept-name">L'Automaticité — Apprendre sans effort conscient</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('neuroplasticite')"><span class="concept-emoji">🔄</span><span class="concept-name">Neuroplasticité & Règle de Hebb</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('biais')"><span class="concept-emoji">🎭</span><span class="concept-name">Les 6 Biais Cognitifs qui te sabotent</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('flexibilite')"><span class="concept-emoji">🌊</span><span class="concept-name">Flexibilité Psychologique (ACT)</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('dilts')"><span class="concept-emoji">🏔️</span><span class="concept-name">Pyramide de Dilts — Les 6 niveaux de changement</span><span class="concept-arrow">→</span></div>
+            </div>
+            <a class="accordion-see-all" href="#fiches" onclick="filterFiches('all', document.querySelector('.niveau-tab.active'))">Voir toutes les fiches Sciences Humaines →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spiritualité Laïque -->
+      <div class="accordion-card acc-spirit" id="acc-spirit">
+        <button class="accordion-trigger" onclick="toggleAccordion('spirit')" aria-expanded="false" aria-controls="panel-spirit">
+          <span class="accordion-domain-badge">Spiritualité Laïque</span>
+          <span class="accordion-trigger-text">
+            <span class="accordion-trigger-title">✨ Connaissance de soi profonde</span>
+            <span class="accordion-trigger-count">8 concepts · 4 fiches</span>
+          </span>
+          <span class="accordion-arrow" aria-hidden="true">▾</span>
+        </button>
+        <div class="accordion-panel" id="panel-spirit" role="region" aria-labelledby="acc-spirit">
+          <div class="accordion-panel-inner">
+            <div class="accordion-domain-apport">Sans dogme, sans religion. La connaissance de soi profonde — Jung, l'énergie vitale, l'individuation. <strong>Qui tu es vraiment quand tu enlèves les masques.</strong></div>
+            <div class="concepts-list">
+              <div class="concept-item" onclick="openFiche('individuation')"><span class="concept-emoji">🪞</span><span class="concept-name">L'Individuation — Le voyage vers soi-même</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('energie')"><span class="concept-emoji">🔥</span><span class="concept-name">Énergie Vitale — Ce qui t'alimente vraiment</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('serenite')"><span class="concept-emoji">🌿</span><span class="concept-name">La Sérénité — Ancré au milieu de la tempête</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('elevation')"><span class="concept-emoji">🌟</span><span class="concept-name">Élévation de Conscience — Apprendre pour transmettre</span><span class="concept-arrow">→</span></div>
+            </div>
+            <a class="accordion-see-all" href="#fiches">Voir toutes les fiches Spiritualité Laïque →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Philosophie Pratique -->
+      <div class="accordion-card acc-philo" id="acc-philo">
+        <button class="accordion-trigger" onclick="toggleAccordion('philo')" aria-expanded="false" aria-controls="panel-philo">
+          <span class="accordion-domain-badge">Philosophie Pratique</span>
+          <span class="accordion-trigger-text">
+            <span class="accordion-trigger-title">⚖️ Outils & Sagesse appliquée</span>
+            <span class="accordion-trigger-count">9 concepts · 4 fiches</span>
+          </span>
+          <span class="accordion-arrow" aria-hidden="true">▾</span>
+        </button>
+        <div class="accordion-panel" id="panel-philo" role="region" aria-labelledby="acc-philo">
+          <div class="accordion-panel-inner">
+            <div class="accordion-domain-apport">Les Stoïciens, Épictète, Marc Aurèle — traduits en <strong>pratiques concrètes pour aujourd'hui</strong>. Pas de la théorie. Des outils qui changent comment tu vis.</div>
+            <div class="concepts-list">
+              <div class="concept-item" onclick="openFiche('controle')"><span class="concept-emoji">⚖️</span><span class="concept-name">Contrôle & Acceptation — La frontière décisive</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('preparation')"><span class="concept-emoji">🎯</span><span class="concept-name">Préparation Mentale — Le rituel des Stoïciens</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item" onclick="openFiche('engagement')"><span class="concept-emoji">🔮</span><span class="concept-name">Engagement & Détachement — Le paradoxe</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item"><span class="concept-emoji">🌱</span><span class="concept-name">Stratégie d'Échec — Préméditation négative</span><span class="concept-arrow">→</span></div>
+            </div>
+            <a class="accordion-see-all" href="#fiches">Voir toutes les fiches Philosophie Pratique →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connaissance de Soi -->
+      <div class="accordion-card acc-soi" id="acc-soi">
+        <button class="accordion-trigger" onclick="toggleAccordion('soi')" aria-expanded="false" aria-controls="panel-soi">
+          <span class="accordion-domain-badge">Connaissance de Soi</span>
+          <span class="accordion-trigger-text">
+            <span class="accordion-trigger-title">🪞 Valeurs, Croyances, Schémas</span>
+            <span class="accordion-trigger-count">6 concepts · 2 fiches</span>
+          </span>
+          <span class="accordion-arrow" aria-hidden="true">▾</span>
+        </button>
+        <div class="accordion-panel" id="panel-soi" role="region" aria-labelledby="acc-soi">
+          <div class="accordion-panel-inner">
+            <div class="accordion-domain-apport">Le cœur de tout. <strong>Tes valeurs, tes croyances limitantes, tes schémas répétitifs.</strong> Comprendre ce qui te fait agir comme tu agis — et choisir autrement.</div>
+            <div class="concepts-list">
+              <div class="concept-item"><span class="concept-emoji">🧩</span><span class="concept-name">Croyances Limitantes — Comment les identifier</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item"><span class="concept-emoji">🗺️</span><span class="concept-name">Schémas Répétitifs — La carte n'est pas le territoire</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item"><span class="concept-emoji">🎯</span><span class="concept-name">Alignement Valeurs-Actions</span><span class="concept-arrow">→</span></div>
+              <div class="concept-item"><span class="concept-emoji">🌒</span><span class="concept-name">L'Ombre (Jung) — Ce que tu n'acceptes pas en toi</span><span class="concept-arrow">→</span></div>
+            </div>
+            <a class="accordion-see-all" href="#fiches">Voir toutes les fiches Connaissance de Soi →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── BIBLIOTHÈQUE ────────────────────────────────────────────── -->
+<section id="fiches">
+  <div class="container">
+    <div class="accordion-header">
+      <div class="section-tag">Bibliothèque</div>
+      <h2 class="section-title">Les fiches <em style="font-style:italic;color:var(--violet-l)">vivantes</em></h2>
+      <p class="accordion-summary">12 fiches actionnables en Neurosciences, Philosophie et Spiritualité — à filtrer par niveau, à marquer comme lues.</p>
+      <button
+        class="toggle-btn"
+        aria-expanded="false"
+        aria-controls="fiches-body"
+      >
+        <span class="btn-label">Voir plus</span>
+        <span class="btn-arrow" aria-hidden="true">↓</span>
+      </button>
+    </div>
+    <div
+      id="fiches-body"
+      class="accordion-body"
+      role="region"
+    >
+      <div class="accordion-inner">
+        <div class="fiches-header reveal">
+          <div class="niveau-tabs">
+            <button class="niveau-tab active" onclick="filterFiches('all', this)">Toutes</button>
+            <button class="niveau-tab" onclick="filterFiches('eveil', this)">🌱 Éveil</button>
+            <button class="niveau-tab" onclick="filterFiches('exploration', this)">🌿 Exploration</button>
+            <button class="niveau-tab" onclick="filterFiches('integration', this)">🌳 Intégration</button>
+          </div>
+        </div>
+        <div class="fiches-grid reveal reveal-delay-1" id="fichesGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WELCOME MODAL -->
+<div id="welcome-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="wm-box">
+    <button class="wm-close" aria-label="Fermer" onclick="closeWelcomeModal()">✕</button>
+    <h2 class="wm-title" id="wmTitle">Bienvenue — voici ce que ce site peut faire <span>pour toi</span></h2>
+    <div class="wm-blocks">
+      <div class="wm-block">
+        <span class="wm-icon">🧠</span>
+        <p class="wm-text"><strong>Tu consommes du développement perso sans que ça change vraiment</strong><span class="wm-arrow"></span>Ici, chaque concept est une fiche actionnable que tu marques comme lue. Tu construis une vraie progression, pas une liste de lectures.</p>
+      </div>
+      <div class="wm-block">
+        <span class="wm-icon">🗺️</span>
+        <p class="wm-text"><strong>Tu ne sais pas par où commencer</strong><span class="wm-arrow"></span>Fais le diagnostic (2 min) : il t'oriente vers le parcours Éveil, Exploration ou Intégration selon où tu en es vraiment.</p>
+      </div>
+      <div class="wm-block">
+        <span class="wm-icon">📈</span>
+        <p class="wm-text"><strong>Tu perds le fil et tu recommences de zéro</strong><span class="wm-arrow"></span>Le système XP enregistre chaque fiche lue, chaque jour de visite. Ta progression est visible et ne disparaît pas.</p>
+      </div>
+    </div>
+    <div class="wm-actions">
+      <button class="wm-btn-primary" onclick="closeWelcomeModalAndScroll('diagnostic')">Faire le diagnostic →</button>
+      <button class="wm-link-secondary" onclick="closeWelcomeModalAndScroll('concepts')">Explorer les concepts directement</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FICHE -->
+<div class="modal-overlay" id="modal" aria-hidden="true" onclick="closeModal(event)">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" aria-label="Fermer" onclick="closeModalByAction()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ── LECTURES ────────────────────────────────────────────────── -->
+<!-- Redirect minimaliste — l'ID #lectures est conservé pour la nav -->
+<div id="lectures">
+  <!-- Section livres complète (livresGrid conservé pour le JS) -->
+  <section id="lectures-full">
+    <div class="container">
+      <div class="accordion-header">
+        <div class="section-tag">Lectures guidées</div>
+        <h2 class="section-title">Livres <em style="font-style:italic;color:var(--violet-l)">hiérarchisés</em></h2>
+        <p class="accordion-summary">Une bibliothèque de livres sélectionnés du plus accessible au plus transformateur — organisée par domaine.</p>
+        <button
+          class="toggle-btn"
+          aria-expanded="false"
+          aria-controls="lectures-full-body"
+        >
+          <span class="btn-label">Voir plus</span>
+          <span class="btn-arrow" aria-hidden="true">↓</span>
+        </button>
+      </div>
+      <div
+        id="lectures-full-body"
+        class="accordion-body"
+        role="region"
+      >
+        <div class="accordion-inner">
+          <div class="livres-filter-bar reveal">
+            <div class="livres-tabs">
+              <button class="livres-tab active" onclick="filterLivres('all', this)">Tous</button>
+              <button class="livres-tab" onclick="filterLivres('sciences', this)">🧠 Sciences Humaines</button>
+              <button class="livres-tab" onclick="filterLivres('philo', this)">📐 Philosophie Pratique</button>
+              <button class="livres-tab" onclick="filterLivres('spirituel', this)">🌿 Spiritualité Laïque</button>
+            </div>
+          </div>
+          <div id="livresGrid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ── DIAGNOSTIC ─────────────────────────────────────────────── -->
+<section id="diagnostic">
+  <div class="container">
+    <div class="diagnostic-header reveal">
+      <div class="section-tag">Orientation</div>
+      <h2 class="section-title">Où en es-tu <em style="font-style:italic;color:var(--violet-l)">vraiment</em> ?</h2>
+      <p class="section-sub" style="margin:0 auto;text-align:center">4 questions. 3 minutes. Un parcours construit pour toi.</p>
+    </div>
+    <div class="diag-card reveal reveal-delay-1">
+      <div class="diag-progress" id="diagProgress"></div>
+      <div id="diagSteps">
+        <div class="diag-question" id="diagQ"></div>
+        <div class="diag-options"  id="diagOpts"></div>
+        <div class="diag-nav">
+          <span class="diag-counter" id="diagCounter">Question 1 / 4</span>
+          <button class="diag-next" id="diagNext" onclick="diagNextStep()" disabled>Suivant →</button>
+        </div>
+      </div>
+      <div class="diag-result" id="diagResult">
+        <div class="result-icon"  id="rIcon"></div>
+        <div class="result-level" id="rLevel"></div>
+        <div class="result-title" id="rTitle"></div>
+        <div class="result-desc"  id="rDesc"></div>
+        <div class="result-tags"  id="rTags"></div>
+        <button class="btn-primary" onclick="document.getElementById('fiches').scrollIntoView({behavior:'smooth'})">Commencer mon parcours →</button>
+        <br>
+        <button class="diag-restart" onclick="diagReset()">↺ Recommencer</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROGRESSION CTA ─────────────────────────────────────────── -->
+<section id="progression-cta" style="text-align:center; padding: 3rem 1rem;">
+  <a href="progression.html" class="cta-link">
+    📊 Voir ma progression →
+  </a>
+</section>
+
+<!-- AJOUT : Mon Processus -->
+<section id="mon-processus">
+
+  <div class="container processus-inner">
+    <div class="accordion-header processus-header">
+      <div class="section-tag">Méthode</div>
+      <h2 class="section-title">Mon <em style="font-style:italic;color:var(--violet-l)">processus</em></h2>
+      <p class="accordion-summary">Quatre mouvements — Diagnostic, Stratégie, Action, Transformation — pour convertir la compréhension en changement réel.</p>
+      <button
+        class="toggle-btn"
+        aria-expanded="false"
+        aria-controls="mon-processus-body"
+      >
+        <span class="btn-label">Voir plus</span>
+        <span class="btn-arrow" aria-hidden="true">↓</span>
+      </button>
+    </div>
+    <div
+      id="mon-processus-body"
+      class="accordion-body"
+      role="region"
+    >
+      <div class="accordion-inner">
+        <p class="section-sub" style="margin-bottom:2rem;">Pas une formule magique, un chemin honnête.</p>
+        <div class="processus-steps" id="processusSteps">
+
+          <div class="processus-step">
+            <div class="step-number">1</div>
+            <div>
+              <div class="step-title">Diagnostic</div>
+              <p class="step-desc">Identifier où tu en es vraiment — tes schémas répétitifs, tes croyances limitantes, ton niveau de conscience actuel. Sans jugement.</p>
+            </div>
+          </div>
+
+          <div class="processus-step">
+            <div class="step-number">2</div>
+            <div>
+              <div class="step-title">Stratégie</div>
+              <p class="step-desc">Construire un chemin personnalisé — les concepts à intégrer en priorité, les lectures adaptées à ton niveau, les pratiques à ancrer.</p>
+            </div>
+          </div>
+
+          <div class="processus-step">
+            <div class="step-number">3</div>
+            <div>
+              <div class="step-title">Action</div>
+              <p class="step-desc">Passer du savoir au faire. Chaque fiche est une invitation à l'expérimentation concrète dans ta vie réelle — pas dans ta tête.</p>
+            </div>
+          </div>
+
+          <div class="processus-step">
+            <div class="step-number">4</div>
+            <div>
+              <div class="step-title">Transformation</div>
+              <p class="step-desc">Intégrer durablement — quand le concept devient réflexe, quand la sagesse ne demande plus d'effort, quand tu es devenu différent.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div><!-- /processus-inner -->
+</section>
+<!-- FIN AJOUT : Mon Processus -->
+
+<!-- ── CTA FINAL ──────────────────────────────────────────────── -->
+<section id="cta-final" class="refonte">
+  <div class="container">
+    <div class="cta-box-dark reveal">
+      <h2 class="section-title">La compréhension ne suffit pas.<br><em style="font-style:italic;color:var(--violet-l)">La transformation, si.</em></h2>
+      <p class="cta-sub">7 jours pour rencontrer la version de toi qui n'attend que d'être libérée.</p>
+      <button class="btn-primary" onclick="window.location.href='le-retour.html'">
+        Découvrir "Le Retour" →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <p>© 2026 Potentiel Caché Révélé · <a href="#mentions-legales">Mentions légales</a> · Par <a href="#hero">Alexandre Mafille</a></p>
+    <p class="legal-note" id="mentions-legales">Contenu éditorial informatif. Ce site ne remplace pas un avis médical, psychologique ou juridique professionnel.</p>
+  </div>
+</footer>
+
+<script>
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PROGRESS_KEY = 'pcr_progress_v1';
+const progress = { read: [], visits: [] };
+let lastFocusedElement = null;
+
+function getTodayIso() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function loadProgress() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+    progress.read = Array.isArray(stored.read) ? stored.read : [];
+    progress.visits = Array.isArray(stored.visits) ? stored.visits : [];
+  } catch (_) {
+    progress.read = [];
+    progress.visits = [];
+  }
+}
+
+function saveProgress() {
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+}
+
+function registerVisitToday() {
+  const today = getTodayIso();
+  if (!progress.visits.includes(today)) {
+    progress.visits.push(today);
+    progress.visits.sort();
+    saveProgress();
+  }
+}
+
+function toggleMobileNav() {
+  const navLinks = document.getElementById('navLinks');
+  const toggle = document.querySelector('.nav-toggle');
+  if (!navLinks || !toggle) return;
+  const open = navLinks.classList.toggle('open');
+  toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function makeClickableElementsKeyboardFriendly() {
+  document.querySelectorAll('[onclick]').forEach(el => {
+    const tag = el.tagName;
+    if (['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(tag)) return;
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+    if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
+    if (el.dataset.kbdBound === '1') return;
+    el.dataset.kbdBound = '1';
+    el.addEventListener('keydown', evt => {
+      if (evt.key === 'Enter' || evt.key === ' ') {
+        evt.preventDefault();
+        el.click();
+      }
+    });
+  });
+}
+
+// ── PARTICLES ────────────────────────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let pts = [];
+let particlesEnabled = !prefersReducedMotion && window.innerWidth > 900;
+let animationFrameId = null;
+
+function resizeCanvas() {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+}
+
+function initParticles() {
+  pts = [];
+  const total = window.innerWidth > 1400 ? 70 : 45;
+  for (let i = 0; i < total; i++) {
+    pts.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.4 + .3,
+      dx: (Math.random() - .5) * .24,
+      dy: (Math.random() - .5) * .24,
+      o: Math.random() * .35 + .08
+    });
+  }
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  pts.forEach(p => {
+    p.x += p.dx;
+    p.y += p.dy;
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(108,71,255,${p.o})`;
+    ctx.fill();
+  });
+  animationFrameId = requestAnimationFrame(drawParticles);
+}
+
+if (particlesEnabled) {
+  resizeCanvas();
+  initParticles();
+  drawParticles();
+} else {
+  canvas.style.display = 'none';
+}
+
+window.addEventListener('resize', () => {
+  if (!particlesEnabled) return;
+  resizeCanvas();
+  initParticles();
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (!particlesEnabled) return;
+  if (document.hidden && animationFrameId) cancelAnimationFrame(animationFrameId);
+  if (!document.hidden) drawParticles();
+});
+
+// ── REVEAL OBSERVER ──────────────────────────────────────────
+let revealObserver = null;
+if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+} else {
+  revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: .1 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+// ── ECOSYSTEM TOGGLE SUBS ────────────────────────────────────
+let activeGroup = null;
+const ECO_SUBS = {
+  neuro:  ['sub-neuro-1','sub-neuro-2','sub-neuro-3','sub-neuro-4'],
+  spirit: ['sub-spirit-1','sub-spirit-2','sub-spirit-3'],
+  philo:  ['sub-philo-1','sub-philo-2','sub-philo-3'],
+};
+function toggleSubs(group) {
+  const allIds = Object.values(ECO_SUBS).flat();
+  if (activeGroup === group) {
+    allIds.forEach(id => document.getElementById(id)?.classList.remove('visible'));
+    activeGroup = null;
+  } else {
+    allIds.forEach(id => document.getElementById(id)?.classList.remove('visible'));
+    ECO_SUBS[group]?.forEach(id => document.getElementById(id)?.classList.add('visible'));
+    activeGroup = group;
+  }
+}
+
+// ── ENTONNOIR (legacy, conservé) ─────────────────────────────
+function showPane(id, el) {
+  document.querySelectorAll('.funnel-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.funnel-level').forEach(l => l.classList.remove('active'));
+  const pane = document.getElementById('pane-' + id);
+  if (pane) pane.classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ── ACCORDÉON ENTONNOIR ───────────────────────────────────────
+let activeAccordion = null;
+function toggleAccordion(id) {
+  const panel = document.getElementById('panel-' + id);
+  const card  = panel ? panel.closest('.accordion-card') : null;
+  const trigger = card ? card.querySelector('.accordion-trigger') : null;
+  if (!panel || !card) return;
+
+  const isOpen = card.classList.contains('open');
+
+  // Fermer l'accordéon actif si différent
+  if (activeAccordion && activeAccordion !== id) {
+    const prevPanel  = document.getElementById('panel-' + activeAccordion);
+    const prevCard   = prevPanel ? prevPanel.closest('.accordion-card') : null;
+    const prevTrigger = prevCard ? prevCard.querySelector('.accordion-trigger') : null;
+    if (prevPanel) prevPanel.style.maxHeight = null;
+    if (prevCard)  prevCard.classList.remove('open');
+    if (prevTrigger) prevTrigger.setAttribute('aria-expanded', 'false');
+  }
+
+  if (isOpen) {
+    panel.style.maxHeight = null;
+    card.classList.remove('open');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    activeAccordion = null;
+  } else {
+    panel.style.maxHeight = panel.scrollHeight + 'px';
+    card.classList.add('open');
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+    activeAccordion = id;
+    // Scroll doux vers la carte
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+}
+
+// ── DATA FICHES ──────────────────────────────────────────────
+const FICHES = [
+  {
+    id:'automaticite', emoji:'⚡', titre:"L'Automaticité", sous:"Quand ton cerveau apprend à penser sans toi",
+    niveau:'exploration', pilier:'neuro', notebook:'https://notebooklm.google.com/notebook/156b2607-eb8a-44ce-b1d6-0cfb613a2fc4',
+    excerpt:"Transforme tes efforts conscients en intelligence automatique et libère toute ta bande passante mentale.",
+    def:"95% des comportements humains s'exécutent en pilote automatique. Ce qui demande un effort conscient peut, répété avec intention dans un contexte stable, s'ancrer dans les ganglions de la base et devenir fluide. L'automaticité ne supprime pas l'intelligence — elle la libère pour des tâches de plus haute valeur.",
+    body:"Le cerveau humain traite 95% de ses opérations en mode automatique. L'apprentissage conscient est coûteux — il mobilise le cortex préfrontal. Mais répété avec intention, ce même apprentissage s'ancre dans les ganglions de la base et devient fluide, sans effort. C'est la maîtrise.",
+    exemple:"Un musicien débutant pense à chaque note. Après des milliers de répétitions, ses doigts jouent sans qu'il y pense — son cerveau a délégué aux ganglions de la base. Le même mécanisme vaut pour tes émotions, tes décisions, tes réponses sociales.",
+    insight:"Chaque fois que tu répètes une action avec intention, tu construis une autoroute neuronale. Un jour, tu n'auras plus à conduire.",
+    tags:["Neuroplasticité","Habitudes","Performance","Ganglions de la base"]
+  },
+  {
+    id:'neuroplasticite', emoji:'🔄', titre:"Neuroplasticité", sous:"Ton cerveau se remodèle à chaque pensée",
+    niveau:'eveil', pilier:'neuro', notebook:'https://notebooklm.google.com/notebook/f3abbf0c-f48b-4dc3-8321-ece25cb93cfe',
+    excerpt:"Le cerveau n'est pas figé. Chaque expérience, chaque pensée répétée modifie littéralement sa structure.",
+    def:"Le cerveau n'est pas une structure figée — il se remodèle physiquement à chaque nouvelle expérience. Les connexions synaptiques se renforcent avec la répétition et s'élaguent avec l'abandon. À tout âge, tu peux littéralement recâbler tes circuits mentaux.",
+    body:"La neuroplasticité est la capacité du cerveau à se restructurer. Chaque apprentissage crée de nouvelles connexions synaptiques. L'élagage neuronal supprime les connexions inutilisées. Tu peux littéralement recâbler ton cerveau à tout âge.",
+    exemple:"Les musiciens professionnels présentent une région motrice agrandie liée aux doigts. Les chauffeurs de taxi londoniens ont un hippocampe (mémoire spatiale) plus développé que la moyenne. L'architecture neuronale suit l'usage.",
+    insight:"Neurons that fire together, wire together. (Hebb, 1949) — La pensée que tu répètes devient le chemin que tu empruntes.",
+    tags:["Plasticité cérébrale","Apprentissage","Synapses","Hebb","Kandel"]
+  },
+  {
+    id:'biais', emoji:'🎭', titre:"Biais Cognitifs", sous:"Les 6 pièges que ton cerveau te tend quotidiennement",
+    niveau:'eveil', pilier:'neuro',
+    excerpt:"Ton cerveau prend des raccourcis. Apprends à les reconnaître pour choisir comment y répondre.",
+    def:"Les biais cognitifs sont des raccourcis mentaux que le cerveau utilise pour économiser de l'énergie. Ils déforment la perception du réel de manière prévisible et systématique. Les connaître ne les supprime pas — mais crée un espace entre le stimulus et la réponse.",
+    body:"Catastrophisme, pensée tout-ou-rien, lecture de pensée, généralisation abusive, disqualification du positif, personnalisation. Ces 6 biais déforment ta perception du réel. Les connaître ne les supprime pas — mais crée un espace entre le stimulus et ta réponse.",
+    exemple:"Catastrophisme : tu rates un entretien et tu conclus que tu ne trouveras jamais de travail. Le biais amplifie un événement isolé en destin inévitable — et l'émotion qui suit est construite sur cette interprétation, pas sur la réalité.",
+    insight:"Ce n'est pas toi qui es irrationnel — c'est ton cerveau qui optimise pour la survie, pas le bonheur.",
+    tags:["Cognition","ACT","Pensée automatique","Psychologie cognitive","Beck"]
+  },
+  {
+    id:'flexibilite', emoji:'🌊', titre:"Flexibilité Psychologique", sous:"La vraie force, c'est de plier sans se briser",
+    niveau:'exploration', pilier:'neuro',
+    excerpt:"L'ACT appliquée : passer de 'je ne peux pas' à 'j'observe que je pense que je ne peux pas'.",
+    def:"La flexibilité psychologique est la capacité à accueillir des pensées et des émotions difficiles sans qu'elles dirigent ton comportement. Elle ne supprime pas l'inconfort — elle change ta relation à lui. C'est le cœur de la thérapie ACT, validée par des décennies de recherche clinique.",
+    body:"La flexibilité psychologique n'est pas l'indifférence. C'est la capacité à accueillir une pensée difficile sans qu'elle dicte ton comportement. L'ACT propose 6 processus : défusion cognitive, acceptation, contact avec le moment présent, soi-contexte, valeurs, engagement.",
+    exemple:"Au lieu de 'Je suis incapable', tu apprends à dire 'J'observe que j'ai la pensée que je suis incapable.' Cette distance n'est pas du déni — c'est de l'espace. Et dans cet espace, l'action devient possible.",
+    insight:"J'observe que je pense que je ne peux pas. Cette phrase change tout.",
+    tags:["ACT","Défusion cognitive","Acceptation","Valeurs","Rollnick"]
+  },
+  {
+    id:'dilts', emoji:'🏔️', titre:"Pyramide de Dilts", sous:"Tu changes au mauvais niveau depuis le début",
+    niveau:'exploration', pilier:'neuro',
+    excerpt:"6 niveaux logiques — et pourquoi modifier le comportement sans toucher à l'identité ne tient jamais.",
+    def:"Robert Dilts identifie 6 niveaux logiques d'organisation du comportement : environnement, comportement, capacités, croyances/valeurs, identité, mission. Le changement durable ne peut provenir que du niveau le plus élevé où le problème existe — jamais d'en bas.",
+    body:"Robert Dilts identifie 6 niveaux : environnement, comportement, capacités, croyances, valeurs, identité, mission. La plupart du développement personnel agit sur les 2 premiers. L'individuation agit sur les 4 derniers. Le changement durable commence par qui tu crois être.",
+    exemple:"Vouloir changer son alimentation (comportement) sans toucher à la croyance 'Je ne mérite pas de prendre soin de moi' (identité) explique 90% des rechutes. Le problème n'est pas la discipline — c'est le niveau d'intervention.",
+    insight:"Changer son comportement sans changer sa croyance, c'est repeindre une maison qui penche.",
+    tags:["PNL","Identité","Croyances","Changement durable","Niveaux logiques"]
+  },
+  {
+    id:'individuation', emoji:'🪞', titre:"Individuation", sous:"Qui es-tu vraiment quand tu enlèves les masques ?",
+    niveau:'integration', pilier:'spirit', notebook:'https://notebooklm.google.com/notebook/704e92e7-2609-4f4a-aa8a-ca68fb868152',
+    excerpt:"Le processus jungien de devenir soi — intégrer l'ombre, reconnaître les personas, trouver ton fil profond.",
+    def:"L'individuation est le processus jungien par lequel une personne devient ce qu'elle est vraiment — distincte de la masse, mais connectée à l'universel. Elle exige l'intégration de l'Ombre (ce qu'on rejette en soi) et la dissolution des Personas (les rôles sociaux qu'on joue).",
+    body:"Jung décrit l'individuation comme le processus par lequel une personne devient ce qu'elle est vraiment — distincte de la masse, mais en lien avec l'universel. Cela passe par l'intégration de l'Ombre (ce qu'on refuse en soi), la dissolution des Personas (les rôles qu'on joue), et la rencontre avec le Soi.",
+    exemple:"L'homme qui a passé sa vie à jouer le rôle du 'fort' découvre en thérapie une vulnérabilité refoulée. Ce n'est pas une faiblesse — c'est le début de son individuation. L'Ombre intégrée devient ressource.",
+    insight:"L'individuation n'est pas un état à atteindre. C'est un voyage sans fin vers une version toujours plus entière de soi.",
+    tags:["Jung","Ombre","Persona","Inconscient","Identité profonde"]
+  },
+  {
+    id:'energie', emoji:'🔥', titre:"Énergie Vitale", sous:"Ce qui t'alimente — et ce qui te draine",
+    niveau:'eveil', pilier:'spirit',
+    excerpt:"Les 4 dimensions de l'énergie et l'audit qui révèle tes drains cachés.",
+    def:"L'énergie humaine se déploie selon 4 dimensions interdépendantes : physique (le carburant brut), émotionnelle (la qualité de l'engagement), mentale (la direction et la focus), spirituelle (le sens et l'intention). La plupart des blocages de performance viennent d'un déficit dans l'une de ces dimensions, pas d'un manque de temps.",
+    body:"L'énergie se divise en 4 dimensions : physique (le carburant), émotionnelle (la qualité), mentale (la focus), spirituelle (l'intention). La plupart des gens gèrent leur temps en ignorant leur énergie — et s'épuisent. L'audit révèle tes drains invisibles.",
+    exemple:"Un manager intellectuellement performant mais émotionnellement drainé par des conflits non résolus verra sa capacité de décision chuter — même avec 10 heures de sommeil. La fatigue n'est pas toujours physique.",
+    insight:"Tu ne manques pas de temps. Tu manques d'énergie pour utiliser ce temps.",
+    tags:["Performance","Énergie physique","Sens","Burn-out","Jim Loehr"]
+  },
+  {
+    id:'serenite', emoji:'🌿', titre:"Sérénité", sous:"L'état qu'on cherche partout et qui est déjà là",
+    niveau:'integration', pilier:'spirit',
+    excerpt:"La sérénité n'est pas l'absence de tempête — c'est l'art de rester ancré au milieu d'elle.",
+    def:"La sérénité n'est pas l'absence de tempête intérieure — c'est la capacité à rester ancré au milieu d'elle. Ni résistance, ni capitulation : une relation différente à l'expérience, héritée à la fois du stoïcisme romain et du bouddhisme zen.",
+    body:"La sérénité stoïcienne et bouddhiste partagent un point commun : ce n'est pas une absence d'émotion, mais une relation différente à l'émotion. Observer sans être emporté. Ressentir sans s'identifier. Être présent à ce qui est, sans résistance.",
+    exemple:"Face à une critique injuste, la sérénité stoïcienne n'est pas l'indifférence — c'est d'observer la montée de la colère, de la nommer, et de choisir une réponse alignée plutôt qu'une réaction impulsive. La différence est dans le délai entre stimulus et réponse.",
+    insight:"La paix n'est pas un endroit où aller. C'est la façon dont tu te tiens là où tu es.",
+    tags:["Stoïcisme","Bouddhisme","Présence","Équanimité","Acceptation"]
+  },
+  {
+    id:'controle', emoji:'⚖️', titre:"Contrôle & Acceptation", sous:"La ligne qui sépare la paix de l'épuisement",
+    niveau:'eveil', pilier:'philo',
+    excerpt:"La sagesse stoïcienne en pratique : enfin savoir où mettre ton énergie.",
+    def:"La dichotomie du contrôle — cœur de la philosophie stoïcienne — distingue ce qui dépend de toi (tes jugements, désirs, aversions) de ce qui n'en dépend pas (le comportement des autres, les événements extérieurs). Concentrer son énergie sur ce qui échappe à ton contrôle est la source principale de l'épuisement psychologique.",
+    body:"Épictète : 'Des choses, les unes dépendent de nous, les autres n'en dépendent pas.' Cette distinction simple est révolutionnaire. Tu peux agir sur tes pensées, tes jugements, tes désirs, tes aversions. Tu ne contrôles pas le reste. L'épuisement vient de l'inverse.",
+    exemple:"Tu ne contrôles pas la réponse de ton client après une présentation. Tu contrôles uniquement la qualité de ta préparation et la clarté de ton message. Concentrer l'énergie sur le premier épuise. La concentrer sur le second libère.",
+    insight:"Ce n'est pas ce qui t'arrive qui te fait souffrir — c'est ce que tu crois devoir contrôler.",
+    tags:["Stoïcisme","Épictète","ACT","Énergie mentale","Lâcher-prise"]
+  },
+  {
+    id:'preparation', emoji:'🎯', titre:"Préparation Mentale", sous:"Ton esprit décide du résultat avant que tu agisses",
+    niveau:'eveil', pilier:'philo',
+    excerpt:"Stoïciens, Samouraïs, neurosciences — 3 traditions, 1 rituel de 5 min.",
+    def:"La préparation mentale consiste à anticiper les obstacles, visualiser le déroulement d'une action, et ancrer une intention claire avant de passer à l'acte. C'est une pratique commune aux Stoïciens (praemeditatio malorum), aux athlètes de haut niveau et aux traditions martiales — validée par la recherche en neurosciences.",
+    body:"La préméditation des obstacles (praemeditatio malorum chez les Stoïciens), la préparation mentale des athlètes, la méditation avant l'action des Samouraïs — toutes pointent vers la même vérité : visualiser, anticiper, ancrer son intention avant d'agir.",
+    exemple:"Avant un entretien difficile, se demander : 'Qu'est-ce qui pourrait mal tourner ?' puis préparer mentalement sa réponse immunise contre la paralysie de l'imprévu. Ce n'est pas du pessimisme — c'est de la lucidité anticipatoire.",
+    insight:"La victoire ou la défaite se joue dans l'esprit avant de se jouer dans le monde.",
+    tags:["Visualisation","Stoïcisme","Performance","Rituel","Intention"]
+  },
+  {
+    id:'engagement', emoji:'🔮', titre:"Engagement & Détachement", sous:"La danse paradoxale du haut-performer",
+    niveau:'integration', pilier:'philo',
+    excerpt:"Donner tout — puis lâcher. Le paradoxe qui libère le plein potentiel.",
+    def:"Le paradoxe de la haute performance : donner 100% dans l'action tout en restant radicalement détaché du résultat. Ce n'est pas de l'indifférence — c'est la liberté qui permet l'engagement total sans peur de l'échec. Stoïcisme, Bhagavad Gita et psychologie du flow convergent ici.",
+    body:"Les traditions stoïciennes, bouddhistes et la psychologie moderne convergent : l'excellence naît de l'engagement total dans l'action combiné au détachement total du résultat. Ce n'est pas de l'indifférence — c'est de la liberté.",
+    exemple:"Le grand écrivain s'engage totalement dans chaque phrase et reste indifférent à la réception du livre. C'est cette liberté qui lui permet d'écrire la phrase suivante sans peur. L'attachement au résultat bloque le processus qui y mène.",
+    insight:"L'attachement au résultat détruit le processus qui mène à ce résultat.",
+    tags:["Détachement","Flow","Bhagavad Gita","Stoïcisme","Non-attachement"]
+  },
+  {
+    id:'elevation', emoji:'🌟', titre:"Élévation de Conscience", sous:"Apprendre pour transmettre. Transmettre pour transformer.",
+    niveau:'integration', pilier:'spirit',
+    excerpt:"Le cercle vertueux qui transforme ta quête personnelle en impact collectif.",
+    def:"La conscience s'élève par strates successives, chacune révélant ce que la précédente ne pouvait voir. Intégrer un concept, c'est le vivre — pas seulement le comprendre. Transmettre ce qu'on a intégré accélère sa propre intégration et crée une boucle d'expansion collective.",
+    body:"La conscience s'élève par couches successives. Chaque intégration d'un concept te permet d'en voir de nouveaux. Transmettre ce que tu as compris ancre ta compréhension et crée une boucle d'élévation collective.",
+    exemple:"Comprendre intellectuellement que 'le passé ne définit pas le futur' ne change rien. L'intégrer, c'est se retrouver dans une situation d'échec et constater qu'on réagit différemment — sans effort. C'est ça, l'incarnation.",
+    insight:"Tu n'apprends vraiment que quand tu enseignes. Et tu n'enseignes vraiment que quand tu incarnes.",
+    tags:["Conscience","Intégration","Transmission","Spiral Dynamics","Sagesse"]
+  },
+];
+
+const TARGETS = {
+  eveil: FICHES.filter(f => f.niveau === 'eveil').length,
+  exploration: FICHES.filter(f => f.niveau === 'exploration').length,
+  integration: FICHES.filter(f => f.niveau === 'integration').length,
+};
+
+function isFicheRead(id) {
+  return progress.read.includes(id);
+}
+
+function openModal() {
+  const modal = document.getElementById('modal');
+  lastFocusedElement = document.activeElement;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModalByAction() {
+  const modal = document.getElementById('modal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+    lastFocusedElement.focus();
+  }
+}
+
+function toggleFicheRead(id) {
+  if (!id) return;
+  if (isFicheRead(id)) {
+    progress.read = progress.read.filter(x => x !== id);
+  } else {
+    progress.read.push(id);
+  }
+  saveProgress();
+  openFiche(id);
+  renderFiches(currentFicheFilter);
+  updateProgressUI();
+}
+
+function getStats() {
+  const readSet = new Set(progress.read);
+  const read = FICHES.filter(f => readSet.has(f.id));
+  const byLevel = {
+    eveil: read.filter(f => f.niveau === 'eveil').length,
+    exploration: read.filter(f => f.niveau === 'exploration').length,
+    integration: read.filter(f => f.niveau === 'integration').length,
+  };
+  const byPillar = {
+    neuro: read.filter(f => f.pilier === 'neuro').length,
+    philo: read.filter(f => f.pilier === 'philo').length,
+    spirit: read.filter(f => f.pilier === 'spirit').length,
+  };
+  return { total: read.length, byLevel, byPillar };
+}
+
+function computeStreakDays() {
+  const visits = new Set(progress.visits);
+  let streak = 0;
+  const date = new Date();
+  while (true) {
+    const iso = date.toISOString().slice(0, 10);
+    if (!visits.has(iso)) break;
+    streak++;
+    date.setDate(date.getDate() - 1);
+  }
+  return streak;
+}
+
+function renderStreakWeek() {
+  const wrap = document.getElementById('streakDays');
+  if (!wrap) return;
+  const visits = new Set(progress.visits);
+  const today = new Date();
+  const day = (today.getDay() + 6) % 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - day);
+
+  let html = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const iso = d.toISOString().slice(0, 10);
+    const isDone = visits.has(iso);
+    const isToday = iso === getTodayIso();
+    html += `<div class="streak-day${isDone ? ' done' : ''}${isToday ? ' today' : ''}"></div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+function updateBadges(stats, streak) {
+  const unlocked = {
+    first: stats.total >= 1,
+    streak3: streak >= 3,
+    neuro: stats.byPillar.neuro >= 1,
+    philo3: stats.byPillar.philo >= 3,
+    mirror: stats.byLevel.integration >= 2,
+    eveilTotal: stats.byLevel.eveil >= TARGETS.eveil,
+    integrationTotal: stats.byLevel.integration >= TARGETS.integration,
+    master: stats.total >= FICHES.length,
+  };
+  document.querySelectorAll('[data-badge]').forEach(el => {
+    const key = el.dataset.badge;
+    el.classList.toggle('unlocked', Boolean(unlocked[key]));
+  });
+}
+
+function updateNextStep(stats) {
+  const el = document.getElementById('nextStepText');
+  if (!el) return;
+  if (stats.total === 0) {
+    el.textContent = 'Lis une première fiche pour lancer ta progression.';
+    return;
+  }
+  const remaining = {
+    eveil: Math.max(TARGETS.eveil - stats.byLevel.eveil, 0),
+    exploration: Math.max(TARGETS.exploration - stats.byLevel.exploration, 0),
+    integration: Math.max(TARGETS.integration - stats.byLevel.integration, 0),
+  };
+  const nextLevel = Object.keys(remaining).reduce((a, b) => remaining[a] >= remaining[b] ? a : b);
+  const label = { eveil: 'Éveil 🌱', exploration: 'Exploration 🌿', integration: 'Intégration 🌳' };
+  if (remaining[nextLevel] === 0) {
+    el.innerHTML = `Tous les parcours sont complétés. Objectif suivant: badge <strong>Maître 💎</strong>.`;
+    return;
+  }
+  el.innerHTML = `Lis ${remaining[nextLevel]} fiche(s) en <strong>${label[nextLevel]}</strong> pour avancer au prochain palier.`;
+}
+
+function updateProgressUI() {
+  if (!document.getElementById('xpSection')) return; /* REFONTE 2026 */
+  const stats = getStats();
+  const streak = computeStreakDays();
+  const pct = lvl => `${Math.round((stats.byLevel[lvl] / TARGETS[lvl]) * 100)}%`;
+
+  document.getElementById('xpCountEveil').textContent = `${stats.byLevel.eveil} / ${TARGETS.eveil} fiches`;
+  document.getElementById('xpCountExploration').textContent = `${stats.byLevel.exploration} / ${TARGETS.exploration} fiches`;
+  document.getElementById('xpCountIntegration').textContent = `${stats.byLevel.integration} / ${TARGETS.integration} fiches`;
+
+  const bars = [
+    ['xpBarEveil', pct('eveil')],
+    ['xpBarExploration', pct('exploration')],
+    ['xpBarIntegration', pct('integration')],
+  ];
+  bars.forEach(([id, width]) => {
+    const bar = document.getElementById(id);
+    bar.dataset.width = width;
+    if (document.getElementById('xpSection')?.classList.contains('animated')) {
+      bar.style.width = width;
+    }
+  });
+
+  document.getElementById('streakCount').textContent = `${streak} ${streak > 1 ? 'jours' : 'jour'} 🔥`;
+  renderStreakWeek();
+  updateBadges(stats, streak);
+  updateNextStep(stats);
+}
+
+// ── RENDER FICHES ────────────────────────────────────────────
+let currentFicheFilter = 'all';
+
+function renderFiches(filter) {
+  currentFicheFilter = filter;
+  const grid = document.getElementById('fichesGrid');
+  const list = filter === 'all' ? FICHES : FICHES.filter(f => f.niveau === filter);
+  const niveauLabel = { eveil:'🌱 Éveil', exploration:'🌿 Exploration', integration:'🌳 Intégration' };
+  const pilierLabel = { neuro:'Neurosciences', philo:'Philosophie', spirit:'Spiritualité' };
+  grid.innerHTML = list.map(f => `
+    <div class="fiche-card ${f.niveau} ${isFicheRead(f.id) ? 'read' : ''}" onclick="openFiche('${f.id}')">
+      <div class="fiche-card-top">
+        <div class="fiche-emoji">${f.emoji}</div>
+        <span class="fiche-niveau ${f.niveau}">${niveauLabel[f.niveau]}</span>
+      </div>
+      <div class="fiche-title">${f.titre}</div>
+      <div class="fiche-excerpt">${f.excerpt}</div>
+      <div class="fiche-card-bottom">
+        <span class="fiche-pilier ${f.pilier}">${pilierLabel[f.pilier]}</span>
+        ${isFicheRead(f.id) ? '<span class="fiche-read-chip">Lu</span>' : ''}
+        <span class="fiche-arrow">→</span>
+      </div>
+    </div>
+  `).join('');
+  makeClickableElementsKeyboardFriendly();
+}
+
+function filterFiches(filter, btn) {
+  document.querySelectorAll('.niveau-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFiches(filter);
+}
+
+// ── MODAL FICHE ──────────────────────────────────────────────
+function openFiche(id) {
+  const f = FICHES.find(x => x.id === id);
+  if (!f) return;
+  const niveauLabel = { eveil:'🌱 Éveil', exploration:'🌿 Exploration', integration:'🌳 Intégration' };
+  const pilierLabel = { neuro:'Neurosciences', philo:'Philosophie Pratique', spirit:'Spiritualité Laïque' };
+  const isRead = isFicheRead(id);
+  const tagsHtml = f.tags ? `<div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.2rem;">${f.tags.map(t=>`<span style="font-size:.65rem;padding:.2rem .6rem;border-radius:50px;background:rgba(108,71,255,0.08);border:1px solid rgba(108,71,255,0.2);color:var(--violet-l);">${t}</span>`).join('')}</div>` : '';
+  const defHtml = f.def ? `<div class="modal-section-label">En bref</div><div class="modal-body" style="margin-bottom:.8rem;">${f.def}</div>` : '';
+  const exempleHtml = f.exemple ? `<div class="modal-section-label" style="margin-top:.8rem;">Exemple concret</div><div style="background:rgba(240,180,41,0.05);border-left:2px solid var(--gold);padding:.85rem 1rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:.85rem;color:var(--text);line-height:1.65;margin-bottom:1.2rem;">${f.exemple}</div>` : '';
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-emoji">${f.emoji}</div>
+    <div class="modal-meta">${pilierLabel[f.pilier]} · ${niveauLabel[f.niveau]}</div>
+    <div class="modal-title" id="modalTitle">${f.titre}</div>
+    <div class="modal-sous">${f.sous}</div>
+    ${tagsHtml}
+    ${defHtml}
+    <div class="modal-section-label">Pour aller plus loin</div>
+    <div class="modal-body">${f.body}</div>
+    ${exempleHtml}
+    <div class="modal-insight">"${f.insight}"</div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="toggleFicheRead('${f.id}')">${isRead ? 'Marquer comme non lu' : 'Marquer comme lu ✓'}</button>
+      <button class="modal-btn ghost" onclick="closeModalByAction();document.getElementById('lectures').scrollIntoView({behavior:'smooth'})">Livre source →</button>
+      ${f.notebook ? `<a href="${f.notebook}" target="_blank" rel="noopener" class="btn-notebook">📓 Voir le notebook →</a>` : ''}
+    </div>
+  `;
+  openModal();
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) closeModalByAction();
+}
+
+// ── DATA LIVRES ──────────────────────────────────────────────
+const LIVRES = [
+  // 🧠 Sciences Humaines
+  { num:3,  domaine:'sciences',  niveau:1, titre:"Atomic Habits",           auteur:"James Clear",      apport:"Comment les petites habitudes créent des transformations radicales. La neuroplasticité en pratique.", tags:["Habitudes","Identité","Systèmes"], amazon:"https://amzn.eu/d/0g4ft3R5", notebook:"https://notebooklm.google.com/notebook/769b0d30-1614-451b-aeb6-c33713b5aeb6" },
+  { num:8,  domaine:'sciences',  niveau:1, titre:"Influence",               auteur:"Robert Cialdini",  apport:"Six principes gouvernent comment tu te laisses convaincre — et comment on te manipule. Les connaître ne rend pas méfiant. Ça rend libre.", tags:["Persuasion","Réciprocité","Biais sociaux","Influence"], amazon:null },
+  { num:7,  domaine:'sciences',  niveau:2, titre:"Thinking, Fast and Slow", auteur:"Daniel Kahneman",  apport:"Deux systèmes de pensée coexistent en toi — et tu ignores lequel décide vraiment. L'architecture de l'irrationalité humaine, exposée avec rigueur et clarté.", tags:["Système 1 & 2","Biais cognitifs","Décision","Kahneman"], amazon:null },
+  { num:6,  domaine:'sciences',  niveau:3, titre:"L'Homme et ses Symboles", auteur:"Carl G. Jung",     apport:"L'introduction la plus accessible à la psychologie jungienne. L'ombre, les archétypes, l'individuation.", tags:["Jung","Ombre","Archétypes","Individuation"], amazon:"https://www.amazon.fr/Lhomme-ses-symboles-C-Jung/dp/2221027205" },
+  { num:9,  domaine:'sciences',  niveau:3, titre:"L'Erreur de Descartes",   auteur:"António Damásio",  apport:"Les émotions ne sont pas l'ennemi de la raison — elles en sont le fondement. Une révolution dans la compréhension du cerveau qui se lit comme une enquête philosophique.", tags:["Émotions","Raison","Neurosciences","Corps"], amazon:null },
+  // 📐 Philosophie Pratique
+  { num:5,  domaine:'philo',     niveau:1, titre:"Les Stoïciens — Œuvres",  auteur:"Marc Aurèle, Épictète", apport:"La sagesse pratique des Stoïciens appliquée au quotidien. Ce qui dépend de toi, ce qui n'en dépend pas.", tags:["Stoïcisme","Contrôle","Sagesse"], amazon:"https://www.amazon.fr/Pens%C3%A9es-moi-m%C3%AAme-Suivi-Manuel-dEpict%C3%A8te/dp/2080700162" },
+  { num:10, domaine:'philo',     niveau:1, titre:"L'Obstacle est le Chemin",auteur:"Ryan Holiday",     apport:"Ce qui te bloque est précisément ce qui te construit. Le stoïcisme traduit en stratégie pour aujourd'hui — sans jargon, sans condescendance.", tags:["Stoïcisme","Obstacle","Résilience","Ryan Holiday"], amazon:null },
+  { num:4,  domaine:'philo',     niveau:2, titre:"Man's Search for Meaning",auteur:"Viktor Frankl",    apport:"Trouver du sens même dans l'adversité extrême. La logothérapie comme chemin vers soi.", tags:["Sens","Résilience","Liberté intérieure"], amazon:"https://www.amazon.fr/Mans-Search-Meaning-Viktor-Frankl/dp/0807014265" },
+  { num:12, domaine:'philo',     niveau:2, titre:"Le Mythe de Sisyphe",     auteur:"Albert Camus",     apport:"La vie est absurde. Camus ne cherche pas à résoudre ce problème — il propose d'en faire un point de départ. Le texte fondateur de la résistance philosophique.", tags:["Absurde","Sens","Résistance","Camus"], amazon:null },
+  { num:11, domaine:'philo',     niveau:3, titre:"Antifragile",             auteur:"Nassim Taleb",     apport:"Il existe des systèmes que le chaos renforce. Toi tu peux en être un. Une philosophie radicale de la robustesse — ancrée dans les mathématiques et la sagesse antique.", tags:["Antifragilité","Incertitude","Risque","Taleb"], amazon:null },
+  // 🌿 Spiritualité Laïque
+  { num:1,  domaine:'spirituel', niveau:1, titre:"L'Art de la Méditation",  auteur:"Matthieu Ricard",  apport:"Le point d'entrée le plus doux pour commencer à observer son propre esprit. Aucun prérequis.", tags:["Pleine conscience","Observer ses pensées","Bien-être"], amazon:"https://amzn.eu/d/0hfJC9bM" },
+  { num:2,  domaine:'spirituel', niveau:1, titre:"The Power of Now",         auteur:"Eckhart Tolle",    apport:"La présence au moment présent comme porte vers la paix intérieure. Révolutionnaire et accessible.", tags:["Présence","Ego","Souffrance"], amazon:"https://amzn.eu/d/0dj15Tno" },
+  { num:13, domaine:'spirituel', niveau:1, titre:"Méditer, jour après jour", auteur:"Christophe André", apport:"Le psychiatre qui a introduit la méditation en psychiatrie française. Aucun ésotérisme — une pratique illustrée, progressive, ancrée dans la science. Le meilleur point d'entrée en français.", tags:["Méditation","Pleine conscience","Pratique","Christophe André"], amazon:null },
+  { num:14, domaine:'spirituel', niveau:2, titre:"Radical Acceptance",       auteur:"Tara Brach",       apport:"L'acceptation comme acte de transformation, pas de capitulation. Tara Brach traverse la honte, la peur du jugement, le sentiment d'insuffisance — avec une profondeur clinique et une douceur rare.", tags:["Acceptation","Honte","Compassion","Tara Brach"], amazon:null },
+  { num:15, domaine:'spirituel', niveau:3, titre:"Waking Up",                auteur:"Sam Harris",       apport:"La spiritualité rigoureusement séparée de la religion. Harris explore la conscience, le moi, les états méditatifs — avec les outils du neuroscientifique et la franchise du philosophe athée.", tags:["Conscience","Méditation","Laïcité","Sam Harris"], amazon:null },
+];
+
+// ── RENDER LIVRES ─────────────────────────────────────────────
+let currentLivreFilter = 'all';
+
+function livreCard(l) {
+  const numStr = String(l.num).padStart(2, '0');
+  const niveauMap   = { 1:'eveil', 2:'exploration', 3:'integration' };
+  const niveauLabel = { 1:'Éveil', 2:'Exploration', 3:'Intégration' };
+  const domainIcon  = { sciences:'🧠', philo:'📐', spirituel:'🌿' };
+  const nClass = niveauMap[l.niveau]   || 'eveil';
+  const nLabel = niveauLabel[l.niveau] || `Niveau ${l.niveau}`;
+  const visibleTags = l.tags.slice(0, 2);
+  const extraCount  = l.tags.length - 2;
+  return `
+    <div class="livre-card domaine-${l.domaine}" onclick="openLivreModal(${l.num})" role="button" tabindex="0" aria-label="${l.titre} par ${l.auteur}">
+      <div class="livre-card-header domaine-header-${l.domaine}">
+        <div class="livre-card-num">${numStr}</div>
+        <span class="livre-card-icon">${domainIcon[l.domaine]}</span>
+      </div>
+      <div class="livre-card-body">
+        <span class="livre-niveau-badge ${nClass}">${nLabel}</span>
+        <div class="livre-titre">${l.titre}</div>
+        <div class="livre-auteur">${l.auteur}</div>
+        <div class="livre-apport">${l.apport}</div>
+        <div class="livre-tags">
+          ${visibleTags.map(t => `<span class="livre-tag">${t}</span>`).join('')}
+          ${extraCount > 0 ? `<span class="livre-tag">+${extraCount}</span>` : ''}
+        </div>
+        <button class="livre-discover-btn" onclick="event.stopPropagation();openLivreModal(${l.num})">Découvrir →</button>
+      </div>
+    </div>`;
+}
+
+function scrollDomaineTrack(btn, direction) {
+  const track = btn.closest('.domaine-row').querySelector('.domaine-track');
+  const gap   = parseFloat(getComputedStyle(track).gap) || 19;
+  track.scrollBy({ left: direction * (280 + gap), behavior: 'smooth' });
+}
+
+function updateArrows(track) {
+  const row      = track.closest('.domaine-row');
+  const leftBtn  = row.querySelector('.arrow-left');
+  const rightBtn = row.querySelector('.arrow-right');
+  const atStart  = track.scrollLeft <= 1;
+  const atEnd    = track.scrollLeft >= track.scrollWidth - track.clientWidth - 1;
+  leftBtn.disabled  = atStart;
+  rightBtn.disabled = atEnd;
+  const dots = row.querySelectorAll('.domaine-dots .dot');
+  if (dots.length > 0) {
+    const gap      = parseFloat(getComputedStyle(track).gap) || 19;
+    const activeIdx = Math.min(Math.round(track.scrollLeft / (280 + gap)), dots.length - 1);
+    dots.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+  }
+}
+
+function renderLivres() {
+  const domaines = [
+    { key:'sciences',  icon:'🧠', label:'Sciences Humaines'    },
+    { key:'philo',     icon:'📐', label:'Philosophie Pratique' },
+    { key:'spirituel', icon:'🌿', label:'Spiritualité Laïque'  },
+  ];
+  document.getElementById('livresGrid').innerHTML = domaines.map(d => {
+    const livres = LIVRES
+      .filter(l => l.domaine === d.key)
+      .sort((a, b) => a.niveau - b.niveau || a.num - b.num);
+    const count  = livres.length;
+    const hidden = currentLivreFilter !== 'all' && currentLivreFilter !== d.key;
+    return `
+      <div class="domaine-row${hidden ? ' domaine-hidden' : ''}" data-domaine="${d.key}">
+        <div class="domaine-row-header">
+          <span class="domaine-icon">${d.icon}</span>
+          <span class="domaine-label">${d.label}</span>
+          <span class="domaine-count">${count} livre${count > 1 ? 's' : ''}</span>
+          <div class="domaine-arrows">
+            <button class="arrow-btn arrow-left" aria-label="Précédent" onclick="scrollDomaineTrack(this,-1)" disabled>‹</button>
+            <button class="arrow-btn arrow-right" aria-label="Suivant" onclick="scrollDomaineTrack(this,1)">›</button>
+          </div>
+        </div>
+        <div class="domaine-track-wrapper">
+          <div class="domaine-track" onscroll="updateArrows(this)">
+            ${livres.map(l => livreCard(l)).join('')}
+          </div>
+        </div>
+        <div class="domaine-dots" aria-hidden="true">
+          ${livres.map((_, i) => `<div class="dot${i === 0 ? ' active' : ''}"></div>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+  document.querySelectorAll('.domaine-track').forEach(t => updateArrows(t));
+  makeClickableElementsKeyboardFriendly();
+}
+
+function filterLivres(domaine, btn) {
+  document.querySelectorAll('.livres-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentLivreFilter = domaine;
+  document.querySelectorAll('.domaine-row').forEach(row => {
+    const match = domaine === 'all' || row.dataset.domaine === domaine;
+    row.classList.toggle('domaine-hidden', !match);
+  });
+}
+
+function openLivreModal(num) {
+  const l = LIVRES.find(x => x.num === num);
+  if (!l) return;
+  const domainLabel = { sciences:'🧠 Sciences Humaines', philo:'📐 Philosophie Pratique', spirituel:'🌿 Spiritualité Laïque' };
+  const domainEmoji = { sciences:'🧠', philo:'📐', spirituel:'🌿' };
+  const amazonBtn = l.amazon
+    ? `<button class="modal-btn primary" onclick="window.open('${l.amazon}','_blank','noopener')">Acheter sur Amazon →</button>`
+    : `<p style="font-size:.82rem;color:var(--muted);font-style:italic;">Lien d'achat bientôt disponible</p>`;
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-emoji">${domainEmoji[l.domaine]}</div>
+    <div class="modal-meta">${domainLabel[l.domaine]} · Niveau ${l.niveau}</div>
+    <div class="modal-title" id="modalTitle">${l.titre}</div>
+    <div class="modal-sous">${l.auteur}</div>
+    <div class="modal-body" style="margin:1rem 0;">Ce livre fait partie du parcours <strong style="color:var(--white);">${domainLabel[l.domaine]}</strong>. Prêt à l'acquérir&nbsp;?</div>
+    <div class="modal-insight">${l.apport}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin:1rem 0;">${l.tags.map(t=>`<span class="livre-tag">${t}</span>`).join('')}</div>
+    <div class="modal-actions">
+      ${amazonBtn}
+      ${l.notebook ? `<a href="${l.notebook}" target="_blank" rel="noopener" class="btn-notebook">📓 Voir le notebook →</a>` : ''}
+      <button class="modal-btn ghost" onclick="closeModalByAction()">Fermer</button>
+    </div>
+  `;
+  lastFocusedElement = document.activeElement;
+  openModal();
+}
+
+// ── DATA DIAGNOSTIC ──────────────────────────────────────────
+const QUESTIONS = [
+  { q:"Quand tu penses à ta vie, quelle phrase te ressemble le plus ?", opts:[{t:"Je sais que je peux faire plus, mais je ne sais pas par où commencer.",s:'eveil'},{t:"Je comprends mes mécanismes mais les changements ne tiennent pas.",s:'exploration'},{t:"Je cherche qui je suis vraiment, au-delà de mes rôles.",s:'integration'}] },
+  { q:"Quelle est ta relation avec le développement personnel ?", opts:[{t:"Je commence à m'y intéresser — j'ai besoin de bases solides.",s:'eveil'},{t:"Je lis beaucoup mais j'ai du mal à intégrer vraiment.",s:'exploration'},{t:"Je cherche quelque chose de plus profond que les conseils habituels.",s:'integration'}] },
+  { q:"Ce qui te manque le plus en ce moment, c'est...", opts:[{t:"Des outils concrets et actionnables pour avancer dès maintenant.",s:'eveil'},{t:"Une compréhension plus fine de mes patterns internes.",s:'exploration'},{t:"Un espace pour me rencontrer sans filtre ni performance.",s:'integration'}] },
+  { q:"Face à une difficulté répétitive, ta réaction habituelle ?", opts:[{t:"Je me dis que je devrais changer mais je recommence.",s:'eveil'},{t:"Je comprends pourquoi je le fais, mais je n'arrive pas à arrêter.",s:'exploration'},{t:"Je vois le schéma profond mais je cherche comment l'intégrer.",s:'integration'}] },
+];
+
+const DIAG_RESULTS = {
+  eveil:       { icon:'🌱', level:'Parcours Éveil',       title:'Prise de Conscience',   desc:"Tu es au seuil. Quelque chose s'éveille en toi — une intuition que tu peux être différent, plus libre. Commence par les concepts fondamentaux : ils te donneront la carte.", tags:["Biais Cognitifs","Contrôle & Acceptation","Énergie Vitale","Neuroplasticité","Préparation Mentale"] },
+  exploration: { icon:'🌿', level:'Parcours Exploration', title:'Compréhension Profonde', desc:"Tu as les bases. Tu veux aller plus loin que la surface. Les neurosciences et la psychologie profonde t'attendent — pour ancrer des changements qui durent vraiment.", tags:["Automaticité","Pyramide de Dilts","Flexibilité Psychologique","Engagement & Détachement"] },
+  integration: { icon:'🌳', level:'Parcours Intégration', title:'Incarnation',            desc:"Tu cherches l'alignement profond. Pas des outils — une rencontre avec toi-même. L'individuation jungienne et la spiritualité laïque sont ton terrain.", tags:["Individuation","Élévation de Conscience","Sérénité","L'Ombre"] },
+};
+
+// ── LOGIQUE DIAGNOSTIC ───────────────────────────────────────
+let diagStep = 0, diagAnswers = [], diagSelected = null;
+
+function diagBuild() {
+  const prog = document.getElementById('diagProgress');
+  prog.innerHTML = QUESTIONS.map((_, i) => `<div class="diag-bar" id="dbar${i}"></div>`).join('');
+  diagRenderStep();
+}
+
+function diagRenderStep() {
+  const q = QUESTIONS[diagStep];
+  document.getElementById('diagQ').textContent = q.q;
+  document.getElementById('diagCounter').textContent = `Question ${diagStep + 1} / ${QUESTIONS.length}`;
+  document.getElementById('diagNext').disabled = true;
+  diagSelected = null;
+  document.getElementById('diagOpts').innerHTML = q.opts.map((o, i) => `
+    <button class="diag-opt" onclick="diagSelect(this,'${o.s}')">
+      <div class="diag-opt-circle">${String.fromCharCode(65 + i)}</div>
+      <div class="diag-opt-text">${o.t}</div>
+    </button>
+  `).join('');
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const b = document.getElementById('dbar' + i);
+    if (i < diagStep)       b.className = 'diag-bar done';
+    else if (i === diagStep) b.className = 'diag-bar current';
+    else                    b.className = 'diag-bar';
+  }
+}
+
+function diagSelect(el, score) {
+  document.querySelectorAll('.diag-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  diagSelected = score;
+  document.getElementById('diagNext').disabled = false;
+}
+
+function diagNextStep() {
+  if (!diagSelected) return;
+  diagAnswers.push(diagSelected);
+  diagStep++;
+  if (diagStep >= QUESTIONS.length) diagShowResult();
+  else diagRenderStep();
+}
+
+function diagShowResult() {
+  const counts = { eveil:0, exploration:0, integration:0 };
+  diagAnswers.forEach(a => counts[a]++);
+  const winner = Object.keys(counts).reduce((a, b) => counts[a] >= counts[b] ? a : b);
+  const r = DIAG_RESULTS[winner];
+  document.getElementById('diagSteps').style.display = 'none';
+  const res = document.getElementById('diagResult');
+  res.style.display = 'block';
+  document.getElementById('rIcon').textContent  = r.icon;
+  document.getElementById('rLevel').textContent = r.level;
+  document.getElementById('rTitle').textContent = r.title;
+  document.getElementById('rDesc').textContent  = r.desc;
+  document.getElementById('rTags').innerHTML = r.tags.map(t => `<span class="result-tag">${t}</span>`).join('');
+  for (let i = 0; i < QUESTIONS.length; i++)
+    document.getElementById('dbar' + i).className = 'diag-bar done';
+}
+
+function diagReset() {
+  diagStep = 0; diagAnswers = []; diagSelected = null;
+  document.getElementById('diagResult').style.display = 'none';
+  document.getElementById('diagSteps').style.display  = 'block';
+  diagRenderStep();
+}
+
+// ── ANIMATION XP BARS ────────────────────────────────────────
+const xpSection = document.getElementById('xpSection');
+if (!prefersReducedMotion && 'IntersectionObserver' in window && xpSection) {
+  const xpObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('animated');
+        e.target.querySelectorAll('.xp-bar-fill').forEach(bar => {
+          const target = bar.dataset.width;
+          bar.style.width = '0%';
+          setTimeout(() => { bar.style.width = target; }, 120);
+        });
+        xpObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: .3 });
+  xpObserver.observe(xpSection);
+} else if (xpSection) {
+  xpSection.classList.add('animated');
+}
+
+// ── INITIALISATIONS ──────────────────────────────────────────
+loadProgress();
+registerVisitToday();
+renderFiches('all');
+renderLivres();
+updateProgressUI();
+diagBuild();
+makeClickableElementsKeyboardFriendly();
+
+document.addEventListener('keydown', evt => {
+  if (evt.key === 'Escape') {
+    if (document.getElementById('welcome-modal').classList.contains('open')) closeWelcomeModal();
+    else if (document.getElementById('modal').classList.contains('open')) closeModalByAction();
+  }
+});
+
+// ── WELCOME MODAL ─────────────────────────────────────────────
+(function() {
+  const WM_KEY = 'pcr_welcome_last_shown';
+  const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+  const lastShown = parseInt(localStorage.getItem(WM_KEY) || '0', 10);
+  const shouldShow = !lastShown || (Date.now() - lastShown > SEVEN_DAYS);
+
+  if (!shouldShow) return;
+
+  const overlay = document.getElementById('welcome-modal');
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeWelcomeModal();
+  });
+
+  setTimeout(function() {
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    localStorage.setItem(WM_KEY, Date.now().toString());
+  }, 800);
+})();
+
+function closeWelcomeModal() {
+  const overlay = document.getElementById('welcome-modal');
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+}
+
+function closeWelcomeModalAndScroll(sectionId) {
+  closeWelcomeModal();
+  const target = document.getElementById(sectionId);
+  if (target) setTimeout(function() { target.scrollIntoView({ behavior: 'smooth' }); }, 150);
+}
+
+document.querySelectorAll('#navLinks a').forEach(link => {
+  link.addEventListener('click', () => {
+    const navLinks = document.getElementById('navLinks');
+    const toggle = document.querySelector('.nav-toggle');
+    navLinks.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+  });
+});
+
+// AJOUT : Animation d'entrée photo processus (IntersectionObserver)
+(function() {
+  const procPortrait = document.querySelector('.processus-portrait');
+  if (!procPortrait || prefersReducedMotion) {
+    if (procPortrait) procPortrait.classList.add('visible');
+    return;
+  }
+  const procObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        procObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  procObserver.observe(procPortrait);
+})();
+
+
+// AJOUT : Stagger animation IntersectionObserver pour les étapes du processus
+(function() {
+  const steps = document.querySelectorAll('.processus-step');
+  if (!steps.length || prefersReducedMotion || !('IntersectionObserver' in window)) {
+    steps.forEach(s => s.classList.add('step-visible'));
+    return;
+  }
+  const stepsObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('step-visible');
+        stepsObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  steps.forEach(function(s) { stepsObserver.observe(s); });
+})();
+
+/* === ACCORDÉONS — REFONTE 2026 === */
+(function() {
+  'use strict';
+
+  function initAccordions() {
+    const buttons = document.querySelectorAll('.toggle-btn');
+    if (!buttons.length) return;
+
+    buttons.forEach(function(btn) {
+      const targetId = btn.getAttribute('aria-controls');
+      const body = document.getElementById(targetId);
+      if (!body) return;
+
+      btn.addEventListener('click', function() {
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
+
+        // Bascule l'état
+        btn.setAttribute('aria-expanded', String(!isOpen));
+        const label = btn.querySelector('.btn-label');
+        if (label) label.textContent = isOpen ? 'Voir plus' : 'Voir moins';
+        // La flèche est gérée en CSS via aria-expanded, pas en JS
+        body.classList.toggle('is-open', !isOpen);
+
+        // Scroll doux vers la section si on l'ouvre
+        if (!isOpen) {
+          setTimeout(function() {
+            btn.closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+      });
+    });
+  }
+
+  // Initialisation après chargement du DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAccordions);
+  } else {
+    initAccordions();
+  }
+})();
+</script>
+</body>
+</html>
