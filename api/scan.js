@@ -1,7 +1,7 @@
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const apiKey = (process.env.Anthropic || '').trim();
+  const apiKey = (process.env.CBL || '').trim();
   if (!apiKey) return res.status(500).json({ error: 'Variable Anthropic manquante dans Vercel' });
 
   const { image, mediaType } = req.body;
