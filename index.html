@@ -101,20 +101,13 @@ function SetupScreen(){
       const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(file);});
       const mt=file.type||"image/jpeg";
       let data;
-      // Essai 1 : proxy Vercel (clé côté serveur)
+      // Proxy Vercel
       const proxy=await fetch("/api/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:b64,mediaType:mt})});
-      if(proxy.ok){
-        data=await proxy.json();
-      } else {
-        // Essai 2 : appel direct avec clé localStorage
-        let key=(localStorage.getItem("cbl_api_key")||"").trim();
-        if(!key){
-          key=(window.prompt("Clé API Claude (console.anthropic.com → API Keys)\nSauvegardée localement, une seule fois.")||"").trim();
-          if(!key){setScanError("Clé API requise.");return;}
-          localStorage.setItem("cbl_api_key",key);
-        }
-        data=await callAnthropic(b64,mt,key);
+      if(!proxy.ok){
+        const e=await proxy.json().catch(()=>({}));
+        throw new Error(e.error||`Proxy erreur ${proxy.status}`);
       }
+      data=await proxy.json();
       const text=data.content?.map(b=>b.text||"").join("").trim();
       const parsed=JSON.parse(text);
       if(parsed.exercises?.length>0){setExercises(parsed.exercises.slice(0,12));setScanError("");}
