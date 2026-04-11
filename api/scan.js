@@ -1,6 +1,9 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
+  const apiKey = (process.env.Anthropic || '').trim();
+  if (!apiKey) return res.status(500).json({ error: 'Variable Anthropic manquante dans Vercel' });
+
   const { image, mediaType } = req.body;
   if (!image) return res.status(400).json({ error: 'image manquante' });
 
@@ -8,7 +11,7 @@ export default async function handler(req, res) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': process.env.Anthropic,
+      'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
