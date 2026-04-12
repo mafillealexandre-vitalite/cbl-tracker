@@ -78,33 +78,53 @@ function SetupScreen(){
   const ok=active.length>=2&&exercises.length>=1;
 
   // ── PARSER TEXTE LOCAL (zéro API) ─────────────────────────────────────────
-  const SKIP=/(time\s*cap|qualifier|division|espoir|amateur|routine|wod\s*type|exemple|cbL\s*cup|^cbl$)/i;
-  const parseSegment=(seg)=>{
-    seg=seg.trim();
+  const SKIP=/(time\s*cap|qualifier|division|espoir|amateur|routine|wod\s*type|exemple|cbl\s*cup|^cbl$|^cbe$|finale|paris|open\s*qualifier|causthene|bater)/i;
+
+  const parseSegment=(seg,mult=1,suffix="")=>{
+    seg=seg.trim().replace(/[#ơ1\]]/g,"").trim();
     if(!seg)return null;
-    // extrait le premier nombre comme reps (ex: "15 SQUAT", "1 MUSCLE-UP")
     const m=seg.match(/^(\d+)\s+(.+)$/);
     if(!m)return null;
-    const reps=parseInt(m[1]);
-    if(reps<1||reps>500)return null;
-    // nettoie le nom : garde @X KG, retire ponctuation parasite
-    let name=m[2].replace(/[#ơ]/g,"").replace(/\s+/g," ").trim();
+    const reps=parseInt(m[1])*mult;
+    if(reps<1||reps>999)return null;
+    let name=(m[2]+suffix).replace(/\s+/g," ").trim();
     if(name.length<2)return null;
     return{name,reps};
   };
+
   const parseCircuit=()=>{
     const lines=pasteText.split(/\n/).map(l=>l.trim()).filter(Boolean);
     const result=[];
-    for(const line of lines){
+    for(let line of lines){
       if(SKIP.test(line))continue;
-      // sépare les exercices combinés sur une même ligne (ex: "1 MU + 10 DIPS + 5 PU")
-      const segments=line.split(/\s*\+\s*/);
-      for(const seg of segments){
+
+      // bloc [A + B + ...] @Xkg Xn — ex: [1 PULL-UP + 1 MUSCLE-UP] @5KG X3
+      const bracketM=line.match(/\[([^\]]+)\](.*)$/i);
+      if(bracketM){
+        const inside=bracketM[1];
+        const after=bracketM[2];
+        // multiplicateur X5 ou ×5
+        const multM=after.match(/[xX×]\s*(\d+)/);
+        const mult=multM?parseInt(multM[1]):1;
+        // suffixe poids @XX KG
+        const weightM=after.match(/@[\d.,]+\s*[kK][gG]/);
+        const suffix=weightM?" "+weightM[0].toUpperCase():"";
+        const segs=inside.split(/\s*\+\s*/);
+        for(const seg of segs){
+          const ex=parseSegment(seg,mult,suffix);
+          if(ex)result.push(ex);
+        }
+        continue;
+      }
+
+      // ligne normale, éventuellement avec + (ex: "1 MU + 10 DIPS")
+      const segs=line.split(/\s*\+\s*/);
+      for(const seg of segs){
         const ex=parseSegment(seg);
         if(ex)result.push(ex);
       }
     }
-    if(result.length===0){setPasteError("Aucun exercice détecté. Vérifie que chaque ligne commence par un nombre suivi du nom (ex: 15 PULL-UP).");return;}
+    if(result.length===0){setPasteError("Aucun exercice détecté. Vérifie que chaque ligne commence par un nombre suivi du nom.");return;}
     setExercises(result.slice(0,12));
     setPasteOpen(false);setPasteText("");setPasteError("");
   };
