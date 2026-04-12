@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -58,6 +59,32 @@ function Spinner(){return<span style={{display:"inline-block",width:10,height:10
 
 const params=new URLSearchParams(window.location.search);
 const urlMode=params.get("mode"),urlSession=params.get("session"),urlAthlete=params.get("athlete");
+
+// ── QR CODE ───────────────────────────────────────────────────────────────
+function QRBlock({url,color}){
+  const ref=useRef();
+  useEffect(()=>{
+    if(!ref.current)return;
+    ref.current.innerHTML="";
+    new QRCode(ref.current,{text:url,width:140,height:140,colorDark:"#000000",colorLight:"#FFFFFF",correctLevel:QRCode.CorrectLevel.M});
+  },[url]);
+  return<div ref={ref} style={{borderRadius:8,overflow:"hidden",border:`3px solid ${color||"#fff"}`,display:"inline-block",lineHeight:0}}/>;
+}
+
+function QRCard({name,color,url}){
+  const[copied,setCopied]=useState(false);
+  const copy=()=>{navigator.clipboard?.writeText(url);setCopied(true);setTimeout(()=>setCopied(false),2000);};
+  return(
+    <div style={{background:G.surface,border:`1px solid ${G.border}`,borderTop:`3px solid ${color}`,borderRadius:12,padding:16,display:"flex",flexDirection:"column",alignItems:"center",gap:10}}>
+      <div style={{fontSize:18,fontWeight:900,color,letterSpacing:2}}>{name.toUpperCase()}</div>
+      <QRBlock url={url} color={color}/>
+      <div style={{fontSize:9,letterSpacing:2,color:G.muted,textAlign:"center"}}>SESSION · JUGE</div>
+      <button onClick={copy} style={{width:"100%",background:copied?"rgba(48,209,88,0.15)":G.border,border:`1px solid ${copied?"#30D158":G.border}`,borderRadius:6,color:copied?"#30D158":G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,padding:"7px",cursor:"pointer"}}>
+        {copied?"✓ COPIÉ":"COPIER LE LIEN"}
+      </button>
+    </div>
+  );
+}
 
 // ── SETUP ──────────────────────────────────────────────────────────────────
 function SetupScreen(){
@@ -145,33 +172,34 @@ function SetupScreen(){
 
   if(sessionId){
     const base=window.location.origin+window.location.pathname;
+    const judgeUrl=(name)=>`${base}?mode=judge&session=${sessionId}&athlete=${encodeURIComponent(name)}`;
+    const screenUrl=`${base}?mode=screen&session=${sessionId}`;
     return(
-      <div style={{minHeight:"100vh",background:G.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24,gap:20,animation:"fadein .4s ease"}}>
-        <div style={{fontSize:10,letterSpacing:6,color:G.muted}}>SESSION CRÉÉE</div>
-        <div style={{fontSize:52,fontWeight:900,letterSpacing:10,color:"#30D158",fontFamily:"'Share Tech Mono',monospace"}}>{sessionId}</div>
-        <div style={{width:"100%",maxWidth:520,background:G.surface,border:`1px solid ${G.border}`,borderRadius:12,padding:20,display:"grid",gap:14}}>
-          <div style={{fontSize:11,letterSpacing:4,color:G.muted}}>📱 LIENS JUGES</div>
-          {active.map(a=>(
-            <div key={a.name} style={{borderLeft:`3px solid ${a.color}`,paddingLeft:12}}>
-              <div style={{fontSize:14,fontWeight:700,color:a.color,marginBottom:4}}>{a.name.toUpperCase()}</div>
-              <div onClick={()=>navigator.clipboard?.writeText(`${base}?mode=judge&session=${sessionId}&athlete=${encodeURIComponent(a.name)}`)}
-                style={{background:G.bg,borderRadius:6,padding:"8px 10px",fontFamily:"monospace",fontSize:10,color:G.muted,wordBreak:"break-all",cursor:"pointer"}}>
-                {`${base}?mode=judge&session=${sessionId}&athlete=${encodeURIComponent(a.name)}`}
-                <span style={{color:PALETTE[1],marginLeft:6}}>[copier]</span>
-              </div>
+      <div style={{minHeight:"100vh",background:G.bg,padding:"28px 20px",animation:"fadein .4s ease"}}>
+        <div style={{textAlign:"center",marginBottom:24}}>
+          <div style={{fontSize:10,letterSpacing:6,color:G.muted,marginBottom:6}}>SESSION CRÉÉE</div>
+          <div style={{fontSize:56,fontWeight:900,letterSpacing:10,color:"#30D158",fontFamily:"'Share Tech Mono',monospace"}}>{sessionId}</div>
+        </div>
+
+        <div style={{maxWidth:760,margin:"0 auto",display:"grid",gap:16}}>
+          <div style={{fontSize:11,letterSpacing:4,color:G.muted,borderLeft:"3px solid #1E2330",paddingLeft:10}}>📱 QR CODES JUGES — scanne avec le téléphone</div>
+          <div style={{display:"grid",gridTemplateColumns:`repeat(${Math.min(active.length,3)},1fr)`,gap:12}}>
+            {active.map(a=><QRCard key={a.name} name={a.name} color={a.color} url={judgeUrl(a.name)}/>)}
+          </div>
+
+          <div style={{background:G.surface,border:`1px solid ${G.border}`,borderRadius:12,padding:20,display:"flex",alignItems:"center",gap:20,flexWrap:"wrap"}}>
+            <div style={{flexShrink:0}}>
+              <div style={{fontSize:11,letterSpacing:4,color:G.muted,marginBottom:10}}>🖥️ ÉCRAN PRINCIPAL</div>
+              <QRBlock url={screenUrl} color={PALETTE[1]}/>
             </div>
-          ))}
-          <div style={{borderTop:`1px solid ${G.border}`,paddingTop:14}}>
-            <div style={{fontSize:11,letterSpacing:4,color:G.muted,marginBottom:6}}>🖥️ ÉCRAN PRINCIPAL</div>
-            <div style={{background:G.bg,borderRadius:6,padding:"8px 10px",fontFamily:"monospace",fontSize:10,color:PALETTE[1],wordBreak:"break-all"}}>
-              {`${base}?mode=screen&session=${sessionId}`}
+            <div style={{flex:1,minWidth:200}}>
+              <div style={{fontFamily:"monospace",fontSize:10,color:PALETTE[1],wordBreak:"break-all",marginBottom:12}}>{screenUrl}</div>
+              <a href={screenUrl} style={{display:"inline-block",background:`linear-gradient(135deg,#FF3B30,#0A84FF)`,borderRadius:10,color:"#fff",fontSize:18,fontWeight:900,letterSpacing:4,padding:"14px 32px",textDecoration:"none"}}>
+                OUVRIR L'ÉCRAN →
+              </a>
             </div>
           </div>
         </div>
-        <a href={`${base}?mode=screen&session=${sessionId}`}
-          style={{background:`linear-gradient(135deg,#FF3B30,#0A84FF)`,borderRadius:10,color:"#fff",fontSize:20,fontWeight:900,letterSpacing:4,padding:"16px 40px",textDecoration:"none"}}>
-          OUVRIR L'ÉCRAN →
-        </a>
       </div>
     );
   }
