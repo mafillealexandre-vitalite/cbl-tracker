@@ -101,19 +101,14 @@ function SetupScreen(){
       // bloc [A + B + ...] @Xkg Xn — ex: [1 PULL-UP + 1 MUSCLE-UP] @5KG X3
       const bracketM=line.match(/\[([^\]]+)\](.*)$/i);
       if(bracketM){
-        const inside=bracketM[1];
+        const inside=bracketM[1].replace(/[#ơ]/g,"").trim();
         const after=bracketM[2];
-        // multiplicateur X5 ou ×5
         const multM=after.match(/[xX×]\s*(\d+)/);
-        const mult=multM?parseInt(multM[1]):1;
-        // suffixe poids @XX KG
+        const reps=multM?parseInt(multM[1]):1;
         const weightM=after.match(/@[\d.,]+\s*[kK][gG]/);
         const suffix=weightM?" "+weightM[0].toUpperCase():"";
-        const segs=inside.split(/\s*\+\s*/);
-        for(const seg of segs){
-          const ex=parseSegment(seg,mult,suffix);
-          if(ex)result.push(ex);
-        }
+        const name=(inside+suffix).replace(/\s+/g," ").trim();
+        if(name.length>1)result.push({name,reps});
         continue;
       }
 
