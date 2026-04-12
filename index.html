@@ -70,50 +70,30 @@ function SetupScreen(){
   const[sessionId,setSessionId]=useState(null);
   const[creating,setCreating]=useState(false);
   const[createError,setCreateError]=useState("");
-  const[scanning,setScanning]=useState(false);
-  const[scanError,setScanError]=useState("");
-  const fileRef=useRef();
+  const[pasteText,setPasteText]=useState("");
+  const[pasteOpen,setPasteOpen]=useState(false);
+  const[pasteError,setPasteError]=useState("");
 
   const active=athletes.slice(0,n).filter(a=>a.name.trim());
   const ok=active.length>=2&&exercises.length>=1;
 
-  // ── PHOTO SCAN ────────────────────────────────────────────────────────────
-  const callAnthropic=async(b64,mediaType,key)=>{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-calls":"true"},body:JSON.stringify({
-      model:"claude-haiku-4-5-20251001",max_tokens:500,
-      messages:[{role:"user",content:[
-        {type:"image",source:{type:"base64",media_type:mediaType,data:b64}},
-        {type:"text",text:"Tu es un assistant calisthenics. Extrais la liste des exercices et leurs répétitions dans cette image de circuit CBL.\nRéponds UNIQUEMENT en JSON valide, sans markdown : {\"exercises\":[{\"name\":\"Pull-ups\",\"reps\":25},...] }\nMaximum 12 exercices. Si rien de visible : {\"exercises\":[]}."}
-      ]}]
-    })});
-    if(!r.ok){
-      const e=await r.json().catch(()=>({}));
-      if(r.status===401){localStorage.removeItem("cbl_api_key");throw new Error("Clé API invalide — réessaie.");}
-      throw new Error(e.error?.message||`Erreur ${r.status}`);
+  // ── PARSER TEXTE LOCAL (zéro API) ─────────────────────────────────────────
+  const parseCircuit=()=>{
+    const lines=pasteText.split(/\n/).map(l=>l.trim()).filter(Boolean);
+    const result=[];
+    for(const line of lines){
+      // cherche un nombre dans la ligne (ex: "Pull-ups 25", "25 Dips", "Dips × 25", "Dips: 25 reps")
+      const nums=line.match(/\d+/g);
+      if(!nums)continue;
+      const reps=parseInt(nums[nums.length-1]); // dernier nombre = reps
+      if(reps<1||reps>999)continue;
+      const name=line.replace(/[\d×xX:.()\-]+/g," ").replace(/\b(reps?|répétitions?|fois)\b/gi,"").replace(/\s+/g," ").trim();
+      if(name.length<2)continue;
+      result.push({name,reps});
     }
-    return r.json();
-  };
-
-  const handleScan=async(e)=>{
-    const file=e.target.files[0];if(!file)return;
-    setScanError("");setScanning(true);
-    try{
-      const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(file);});
-      const mt=file.type||"image/jpeg";
-      let data;
-      // Proxy Vercel
-      const proxy=await fetch("/api/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:b64,mediaType:mt})});
-      if(!proxy.ok){
-        const e=await proxy.json().catch(()=>({}));
-        throw new Error(e.error||`Proxy erreur ${proxy.status}`);
-      }
-      data=await proxy.json();
-      const text=data.content?.map(b=>b.text||"").join("").trim();
-      const parsed=JSON.parse(text);
-      if(parsed.exercises?.length>0){setExercises(parsed.exercises.slice(0,12));setScanError("");}
-      else setScanError("Aucun exercice détecté. Essaie une photo plus nette.");
-    }catch(err){setScanError(err.message||"Erreur de lecture. Réessaie.");}
-    finally{setScanning(false);if(fileRef.current)fileRef.current.value="";}
+    if(result.length===0){setPasteError("Aucun exercice détecté. Vérifie le format (une ligne par exercice avec un nombre).");return;}
+    setExercises(result.slice(0,12));
+    setPasteOpen(false);setPasteText("");setPasteError("");
   };
 
   const create=async()=>{
@@ -201,17 +181,39 @@ function SetupScreen(){
           </div>
         </section>
 
+        {pasteOpen&&(
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+            <div style={{background:G.surface,border:`1px solid ${G.border}`,borderRadius:14,padding:24,width:"100%",maxWidth:520,display:"grid",gap:14}}>
+              <div style={{fontSize:11,letterSpacing:4,color:G.muted}}>COLLER LE CIRCUIT</div>
+              <div style={{fontSize:12,color:G.muted,lineHeight:1.6}}>
+                Copie le texte de ton PDF et colle-le ici.<br/>
+                <span style={{color:"#FFD60A"}}>Format attendu :</span> une ligne par exercice avec le nombre de reps.<br/>
+                <span style={{fontFamily:"monospace",fontSize:11}}>Pull-ups 25 | Dips: 30 | 10 Muscle-ups</span>
+              </div>
+              <textarea value={pasteText} onChange={e=>setPasteText(e.target.value)}
+                placeholder={"Pull-ups 25\nDips 30\nMuscle-ups 10\nL-sit 20\nPush-ups 30"}
+                style={{width:"100%",height:180,background:G.bg,border:`1px solid ${G.border}`,borderRadius:8,color:G.text,fontFamily:"'Barlow Condensed',sans-serif",fontSize:14,padding:"10px 12px",outline:"none",resize:"vertical"}}/>
+              {pasteError&&<div style={{fontSize:12,color:"#FF3B30"}}>{pasteError}</div>}
+              <div style={{display:"flex",gap:10}}>
+                <button onClick={()=>{setPasteOpen(false);setPasteText("");setPasteError("");}}
+                  style={{flex:1,background:G.border,border:"none",borderRadius:8,color:G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:14,fontWeight:700,padding:"12px",cursor:"pointer"}}>ANNULER</button>
+                <button onClick={parseCircuit} disabled={!pasteText.trim()}
+                  style={{flex:2,background:pasteText.trim()?`linear-gradient(135deg,${PALETTE[1]},${PALETTE[2]})`:G.border,border:"none",borderRadius:8,color:pasteText.trim()?"#fff":G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:14,fontWeight:900,letterSpacing:2,padding:"12px",cursor:pasteText.trim()?"pointer":"not-allowed"}}>
+                  IMPORTER LE CIRCUIT →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <section>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
             <Label>③ CIRCUIT &amp; RÉPÉTITIONS ({exercises.length}/12)</Label>
-            <div>
-              <input ref={fileRef} type="file" accept="image/*" onChange={handleScan} style={{display:"none"}} id="scan-input"/>
-              <label htmlFor="scan-input" style={{display:"inline-flex",alignItems:"center",gap:6,background:scanning?G.border:`rgba(${rgb(PALETTE[1])},0.15)`,border:`1px solid ${scanning?G.border:PALETTE[1]}`,borderRadius:6,padding:"6px 14px",cursor:scanning?"not-allowed":"pointer",color:scanning?G.muted:PALETTE[1],fontFamily:"'Barlow Condensed',sans-serif",fontSize:12,fontWeight:700,letterSpacing:2,whiteSpace:"nowrap"}}>
-                {scanning?<><Spinner/> SCAN…</>:<>📷 SCANNER UNE PHOTO</>}
-              </label>
-            </div>
+            <button onClick={()=>setPasteOpen(true)}
+              style={{display:"inline-flex",alignItems:"center",gap:6,background:`rgba(${rgb(PALETTE[1])},0.15)`,border:`1px solid ${PALETTE[1]}`,borderRadius:6,padding:"6px 14px",cursor:"pointer",color:PALETTE[1],fontFamily:"'Barlow Condensed',sans-serif",fontSize:12,fontWeight:700,letterSpacing:2,whiteSpace:"nowrap"}}>
+              📋 COLLER UN CIRCUIT
+            </button>
           </div>
-          {scanError&&<div style={{background:"rgba(255,59,48,0.1)",border:"1px solid rgba(255,59,48,0.3)",borderRadius:6,padding:"8px 12px",fontSize:12,color:"#FF3B30",marginBottom:8}}>{scanError}</div>}
           <div style={{display:"grid",gap:6}}>
             {exercises.map((ex,i)=>(
               <div key={i} style={{background:G.surface,border:`1px solid ${G.border}`,borderRadius:6,padding:"8px 12px",display:"flex",alignItems:"center",gap:10}}>
