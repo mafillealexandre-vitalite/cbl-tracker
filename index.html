@@ -160,7 +160,7 @@ function SetupScreen(){
       await db.ref(`sessions/${id}`).set({
         id,phase:phase||"Battle",started:false,startTime:null,
         athletes:Object.fromEntries(active.map(a=>[a.name,{
-          color:a.color,currentExercise:0,finishTime:null,
+          color:a.color,currentExercise:0,finishTime:null,noReps:0,
           exercises:exercises.map(ex=>({name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false}))
         }]))
       });
@@ -315,6 +315,7 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
   const[athlete,setAthlete]=useState(null);
   const[started,setStarted]=useState(false);
   const[flash,setFlash]=useState(false);
+  const[flashNR,setFlashNR]=useState(false);
   const aRef=useRef(null);
 
   useEffect(()=>{
@@ -355,6 +356,16 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     const cur=athlete.exercises[idx].completedReps||0;
     if(cur<=0)return;
     await aRef.current.child(`exercises/${idx}/completedReps`).set(cur-1);
+  };
+
+  const addNoRep=async()=>{
+    if(!athlete||athlete.finishTime)return;
+    setFlashNR(true);setTimeout(()=>setFlashNR(false),120);
+    const idx=athlete.currentExercise;
+    const cur=athlete.exercises[idx].completedReps||0;
+    const updates={noReps:(athlete.noReps||0)+1};
+    if(cur>0)updates[`exercises/${idx}/completedReps`]=cur-1;
+    await aRef.current.update(updates);
   };
 
   const startAll=async()=>db.ref(`sessions/${sessionId}`).update({started:true,startTime:Date.now()});
@@ -416,7 +427,7 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
         <div style={{fontSize:9,letterSpacing:4,color:G.muted}}>JUGE · {sessionId}</div>
         {!started
           ?<button onClick={startAll} style={{background:"#30D158",border:"none",borderRadius:8,color:"#000",fontFamily:"'Barlow Condensed',sans-serif",fontSize:13,fontWeight:900,letterSpacing:2,padding:"8px 14px",cursor:"pointer"}}>▶ START</button>
-          :<button onPointerDown={e=>{e.preventDefault();rmRep();}} style={{background:"rgba(255,59,48,0.15)",border:"1px solid rgba(255,59,48,0.4)",borderRadius:8,color:"#FF3B30",fontFamily:"monospace",fontSize:22,fontWeight:900,width:42,height:42,cursor:"pointer",lineHeight:1}}>−</button>
+          :<div style={{width:42}}/>
         }
       </div>
 
@@ -434,11 +445,18 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
         </div>
       </div>
 
-      {/* Gros bouton + */}
-      <button className="plus-btn" onPointerDown={e=>{e.preventDefault();addRep();}}
-        style={{height:"50vh",background:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:150,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",flexShrink:0,transition:"background .08s"}}>
-        +
-      </button>
+      {/* Boutons + / no-rep */}
+      <div style={{height:"50vh",display:"flex",flexShrink:0}}>
+        <button className="plus-btn" onPointerDown={e=>{e.preventDefault();addRep();}}
+          style={{flex:1,background:flash?`rgba(${rgb(color)},0.3)`:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,borderRight:`1px solid ${G.border}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:120,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s"}}>
+          +
+        </button>
+        <button onPointerDown={e=>{e.preventDefault();addNoRep();}}
+          style={{flex:1,background:flashNR?"rgba(255,59,48,0.28)":"rgba(255,59,48,0.08)",border:"none",borderTop:"3px solid #FF3B30",color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:72,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s",gap:8}}>
+          🚩
+          <span style={{fontSize:16,letterSpacing:3,fontWeight:700}}>NO-REP</span>
+        </button>
+      </div>
     </div>
   );
 }
@@ -489,8 +507,13 @@ function MainScreen({sessionId}){
               </div>
               <div style={{padding:"14px 16px",borderBottom:`1px solid ${G.border}`,flexShrink:0,background:`rgba(${rgb(color)},0.05)`}}>
                 <div style={{fontSize:11,letterSpacing:3,color,marginBottom:2}}>{ex?.name?.toUpperCase()}</div>
-                <div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:58,fontWeight:700,color,lineHeight:1}}>
-                  {ex?.completedReps||0}<span style={{fontSize:22,color:G.muted}}> / {ex?.targetReps}</span>
+                <div style={{display:"flex",alignItems:"baseline",gap:10,flexWrap:"wrap"}}>
+                  <div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:58,fontWeight:700,color,lineHeight:1}}>
+                    {ex?.completedReps||0}<span style={{fontSize:22,color:G.muted}}> / {ex?.targetReps}</span>
+                  </div>
+                  <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:16,fontWeight:700,color:"#FF3B30",letterSpacing:1,whiteSpace:"nowrap"}}>
+                    🚩×{a.noReps||0}
+                  </div>
                 </div>
               </div>
               <div style={{flex:1,overflow:"auto"}}>
