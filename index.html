@@ -116,15 +116,22 @@ function SetupScreen(){
       else merged.push(line);
     }
 
+    // Étape 2 : éclater les lignes à virgule (ex: "[A+B] x3, 20 Push, 12 Pull")
+    const items=[];
+    for(const line of merged){
+      const parts=line.split(/,\s+/);
+      items.push(...parts.map(p=>p.trim()).filter(Boolean));
+    }
+
     const result=[];
-    for(let line of merged){
+    for(let line of items){
       if(SKIP.test(line))continue;
       // Normalise : e16 KG→@16 KG, "→s (secondes), parasites
       line=line.replace(/\be(\d+)\s*[kK][gG]/g,"@$1 KG").replace(/"/g,"s").replace(/[#ơ]/g,"").trim();
       if(!line)continue;
 
-      // Bloc [contenu] X2 @poids → 1 exercice combiné, reps = multiplicateur
-      const bm=line.match(/\[([^\]]+)\](.*)$/i);
+      // Bloc [contenu] ou (contenu) avec optionnel Xn et/ou @poids
+      const bm=line.match(/^[\[\(]([^\]\)]+)[\]\)](.*)$/i);
       if(bm){
         const inside=bm[1].trim();
         const after=bm[2];
@@ -137,8 +144,7 @@ function SetupScreen(){
         continue;
       }
 
-      // Ligne simple/combinée : NOMBRE NOM [+ suite sur même ligne]
-      // Garde tout comme un seul exercice, reps = premier nombre
+      // Ligne simple : NOMBRE NOM
       const m=line.match(/^(\d+)\s+(.+)$/);
       if(m){
         const reps=parseInt(m[1]);
@@ -361,11 +367,7 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
   const addNoRep=async()=>{
     if(!athlete||athlete.finishTime)return;
     setFlashNR(true);setTimeout(()=>setFlashNR(false),120);
-    const idx=athlete.currentExercise;
-    const cur=athlete.exercises[idx].completedReps||0;
-    const updates={noReps:(athlete.noReps||0)+1};
-    if(cur>0)updates[`exercises/${idx}/completedReps`]=cur-1;
-    await aRef.current.update(updates);
+    await aRef.current.update({noReps:(athlete.noReps||0)+1});
   };
 
   const startAll=async()=>db.ref(`sessions/${sessionId}`).update({started:true,startTime:Date.now()});
@@ -421,9 +423,14 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
 
       {/* Header */}
       <div style={{padding:"10px 16px",background:G.surface,borderBottom:`1px solid ${G.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
-        <button onClick={()=>setSelected(null)} style={{background:"transparent",border:"none",color:G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:12,letterSpacing:2,cursor:"pointer",padding:0}}>
-          ← CHANGER
-        </button>
+        <div style={{display:"flex",gap:10,alignItems:"center"}}>
+          <button onClick={()=>setSelected(null)} style={{background:"transparent",border:"none",color:G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:12,letterSpacing:2,cursor:"pointer",padding:0}}>
+            ← ATHLÈTE
+          </button>
+          <button onClick={()=>{window.location.href=window.location.pathname;}} style={{background:"transparent",border:"none",color:G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:12,letterSpacing:2,cursor:"pointer",padding:0,opacity:.5}}>
+            ⌂
+          </button>
+        </div>
         <div style={{fontSize:9,letterSpacing:4,color:G.muted}}>JUGE · {sessionId}</div>
         {!started
           ?<button onClick={startAll} style={{background:"#30D158",border:"none",borderRadius:8,color:"#000",fontFamily:"'Barlow Condensed',sans-serif",fontSize:13,fontWeight:900,letterSpacing:2,padding:"8px 14px",cursor:"pointer"}}>▶ START</button>
@@ -488,7 +495,12 @@ function MainScreen({sessionId}){
   return(
     <div style={{height:"100vh",background:G.bg,display:"flex",flexDirection:"column"}}>
       <div style={{padding:"8px 24px",borderBottom:`1px solid ${G.border}`,display:"flex",alignItems:"center",justifyContent:"space-between",background:G.surface,flexShrink:0}}>
-        <div style={{fontSize:9,letterSpacing:4,color:G.muted}}>{(session.phase||"BATTLE").toUpperCase()} · {sessionId}</div>
+        <div style={{display:"flex",flexDirection:"column",gap:2}}>
+          <div style={{fontSize:9,letterSpacing:4,color:G.muted}}>{(session.phase||"BATTLE").toUpperCase()} · {sessionId}</div>
+          <button onClick={()=>{window.location.href=window.location.pathname;}} style={{background:"transparent",border:"none",color:G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:10,letterSpacing:2,cursor:"pointer",padding:0,textAlign:"left",opacity:.6}}>
+            ⌂ SETUP
+          </button>
+        </div>
         <div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:44,letterSpacing:2,color:allDone?"#30D158":session.started?G.text:G.muted,lineHeight:1}}>{fmt(elapsed)}</div>
         <div style={{fontSize:11,letterSpacing:3,color:G.muted}}>{athletes.filter(a=>a.finishTime).length}/{athletes.length} FINIS</div>
       </div>
