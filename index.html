@@ -130,22 +130,7 @@ function SetupScreen(){
       line=line.replace(/\be(\d+)\s*[kK][gG]/g,"@$1 KG").replace(/"/g,"s").replace(/[#ơ]/g,"").trim();
       if(!line)continue;
 
-      // Bloc [contenu] ou (contenu) avec optionnel Xn et/ou @poids — traité en bloc, pas éclaté
-      const bm=line.match(/^[\[\(]([^\]\)]+)[\]\)](.*)$/i);
-      if(bm){
-        const inside=bm[1].trim();
-        const after=bm[2];
-        const multM=after.match(/[xX×]\s*(\d+)/);
-        const reps=multM?parseInt(multM[1]):1;
-        const wM=after.match(/@[\d.,]+\s*[kK][gG]/i);
-        const suffix=wM?" "+wM[0].toUpperCase():"";
-        const name=(inside+suffix).replace(/\s+/g," ").trim();
-        if(name.length>1)result.push({name,reps});
-        continue;
-      }
-
-      // Multi-segment par " + " hors brackets → chain block si >1 segment
-      const segs=line.split(/\s+\+\s+/);
+      // parseSeg : parse un segment individuel (reps ou temps)
       const parseSeg=seg=>{
         seg=seg.trim();if(!seg)return null;
         const tS=seg.match(/^(\d+)s\s+(.+)$/i);
@@ -156,6 +141,33 @@ function SetupScreen(){
         if(m){const reps=parseInt(m[1]);if(reps>=1&&reps<=500){const name=m[2].replace(/\s+/g," ").trim();if(name.length>1)return{name,reps};}}
         return null;
       };
+
+      // Bloc [contenu] ou (contenu)
+      const bm=line.match(/^[\[\(]([^\]\)]+)[\]\)](.*)$/i);
+      if(bm){
+        const inside=bm[1].trim();
+        const after=bm[2];
+        const multM=after.match(/[xX×]\s*(\d+)/);
+        const reps=multM?parseInt(multM[1]):1;
+        // Si inside contient ' + ', essayer de parser comme chain
+        if(inside.includes(' + ')){
+          const steps=inside.split(/\s+\+\s+/).map(parseSeg).filter(Boolean);
+          if(steps.length>1){
+            const chainName=steps.map(s=>s.isTime?`${s.duration}s ${s.name}`:`${s.reps} ${s.name}`).join(' + ');
+            result.push({name:chainName,isChain:true,steps,reps});
+            continue;
+          }
+        }
+        // Sinon : bloc nommé classique avec poids éventuel
+        const wM=after.match(/@[\d.,]+\s*[kK][gG]/i);
+        const suffix=wM?" "+wM[0].toUpperCase():"";
+        const name=(inside+suffix).replace(/\s+/g," ").trim();
+        if(name.length>1)result.push({name,reps});
+        continue;
+      }
+
+      // Multi-segment par " + " hors brackets → chain block si >1 segment
+      const segs=line.split(/\s+\+\s+/);
       if(segs.length>1){
         const steps=segs.map(parseSeg).filter(Boolean);
         if(steps.length>0){
