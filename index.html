@@ -130,13 +130,7 @@ function SetupScreen(){
       line=line.replace(/\be(\d+)\s*[kK][gG]/g,"@$1 KG").replace(/"/g,"s").replace(/[#ơ]/g,"").trim();
       if(!line)continue;
 
-      // Exercice en secondes : "30s NOM" ou "NOM 30s"
-      const tS=line.match(/^(\d+)s\s+(.+)$/i);
-      if(tS){const dur=parseInt(tS[1]),nm=tS[2].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)result.push({name:nm,isTime:true,reps:dur});continue;}
-      const tE=line.match(/^(.+?)\s+(\d+)s$/i);
-      if(tE){const dur=parseInt(tE[2]),nm=tE[1].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)result.push({name:nm,isTime:true,reps:dur});continue;}
-
-      // Bloc [contenu] ou (contenu) avec optionnel Xn et/ou @poids
+      // Bloc [contenu] ou (contenu) avec optionnel Xn et/ou @poids — traité en bloc, pas éclaté
       const bm=line.match(/^[\[\(]([^\]\)]+)[\]\)](.*)$/i);
       if(bm){
         const inside=bm[1].trim();
@@ -150,14 +144,18 @@ function SetupScreen(){
         continue;
       }
 
-      // Ligne simple : NOMBRE NOM
-      const m=line.match(/^(\d+)\s+(.+)$/);
-      if(m){
-        const reps=parseInt(m[1]);
-        if(reps>=1&&reps<=500){
-          const name=m[2].replace(/\s+/g," ").trim();
-          if(name.length>1)result.push({name,reps});
-        }
+      // Éclate par " + " pour les lignes multi-exercices hors brackets
+      const segs=line.split(/\s+\+\s+/);
+      for(let seg of segs){
+        seg=seg.trim();if(!seg)continue;
+        // Exercice en secondes : "10s NOM" ou "NOM 10s"
+        const tS=seg.match(/^(\d+)s\s+(.+)$/i);
+        if(tS){const dur=parseInt(tS[1]),nm=tS[2].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)result.push({name:nm,isTime:true,reps:dur});continue;}
+        const tE=seg.match(/^(.+?)\s+(\d+)s$/i);
+        if(tE){const dur=parseInt(tE[2]),nm=tE[1].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)result.push({name:nm,isTime:true,reps:dur});continue;}
+        // Ligne simple : NOMBRE NOM
+        const m=seg.match(/^(\d+)\s+(.+)$/);
+        if(m){const reps=parseInt(m[1]);if(reps>=1&&reps<=500){const name=m[2].replace(/\s+/g," ").trim();if(name.length>1)result.push({name,reps});}}
       }
     }
     if(result.length===0){setPasteError("Aucun exercice détecté. Vérifie que chaque ligne commence par un nombre.");return;}
