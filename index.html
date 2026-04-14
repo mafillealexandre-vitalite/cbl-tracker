@@ -144,18 +144,27 @@ function SetupScreen(){
         continue;
       }
 
-      // Éclate par " + " pour les lignes multi-exercices hors brackets
+      // Multi-segment par " + " hors brackets → chain block si >1 segment
       const segs=line.split(/\s+\+\s+/);
-      for(let seg of segs){
-        seg=seg.trim();if(!seg)continue;
-        // Exercice en secondes : "10s NOM" ou "NOM 10s"
+      const parseSeg=seg=>{
+        seg=seg.trim();if(!seg)return null;
         const tS=seg.match(/^(\d+)s\s+(.+)$/i);
-        if(tS){const dur=parseInt(tS[1]),nm=tS[2].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)result.push({name:nm,isTime:true,reps:dur});continue;}
+        if(tS){const dur=parseInt(tS[1]),nm=tS[2].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)return{name:nm,isTime:true,duration:dur};}
         const tE=seg.match(/^(.+?)\s+(\d+)s$/i);
-        if(tE){const dur=parseInt(tE[2]),nm=tE[1].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)result.push({name:nm,isTime:true,reps:dur});continue;}
-        // Ligne simple : NOMBRE NOM
+        if(tE){const dur=parseInt(tE[2]),nm=tE[1].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)return{name:nm,isTime:true,duration:dur};}
         const m=seg.match(/^(\d+)\s+(.+)$/);
-        if(m){const reps=parseInt(m[1]);if(reps>=1&&reps<=500){const name=m[2].replace(/\s+/g," ").trim();if(name.length>1)result.push({name,reps});}}
+        if(m){const reps=parseInt(m[1]);if(reps>=1&&reps<=500){const name=m[2].replace(/\s+/g," ").trim();if(name.length>1)return{name,reps};}}
+        return null;
+      };
+      if(segs.length>1){
+        const steps=segs.map(parseSeg).filter(Boolean);
+        if(steps.length>0){
+          const chainName=steps.map(s=>s.isTime?`${s.duration}s ${s.name}`:`${s.reps} ${s.name}`).join(' + ');
+          result.push({name:chainName,isChain:true,steps,reps:1});
+        }
+      }else{
+        const s=parseSeg(segs[0]);
+        if(s)result.push(s.isTime?{name:s.name,isTime:true,reps:s.duration}:s);
       }
     }
     if(result.length===0){setPasteError("Aucun exercice détecté. Vérifie que chaque ligne commence par un nombre.");return;}
@@ -171,7 +180,7 @@ function SetupScreen(){
         id,phase:phase||"Battle",started:false,startTime:null,
         athletes:Object.fromEntries(active.map(a=>[a.name,{
           color:a.color,currentExercise:0,finishTime:null,noReps:0,
-          exercises:exercises.map(ex=>ex.isTime?{name:ex.name,type:"time",duration:Number(ex.reps),timerStarted:null,done:false,failed:false}:{name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false})
+          exercises:exercises.map(ex=>ex.isChain?{name:ex.name,type:"chain",currentStep:0,done:false,steps:ex.steps.map(s=>s.isTime?{name:s.name,type:"time",duration:s.duration,timerStarted:null,done:false,failed:false}:{name:s.name,targetReps:s.reps,completedReps:0,done:false})}:ex.isTime?{name:ex.name,type:"time",duration:Number(ex.reps),timerStarted:null,done:false,failed:false}:{name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false})
         }]))
       });
       setSessionId(id);
@@ -288,9 +297,13 @@ function SetupScreen(){
                 <span style={{fontFamily:"monospace",fontSize:10,color:G.muted,width:20}}>{String(i+1).padStart(2,"0")}</span>
                 <input value={ex.name} onChange={e=>setExercises(p=>p.map((x,j)=>j===i?{...x,name:e.target.value}:x))}
                   style={{flex:1,background:"transparent",border:"none",color:G.text,fontFamily:"'Barlow Condensed',sans-serif",fontSize:15,fontWeight:600,outline:"none"}}/>
-                <button onClick={()=>setExercises(p=>p.map((x,j)=>j===i?{...x,reps:Math.max(1,x.reps-5)}:x))} style={{background:G.border,border:"none",borderRadius:4,color:G.text,width:26,height:26,cursor:"pointer",fontSize:16,fontFamily:"monospace"}}>−</button>
-                <span style={{fontFamily:"'Share Tech Mono',monospace",fontSize:ex.isTime?11:16,fontWeight:700,color:ex.isTime?"#0A84FF":"#FFD60A",width:ex.isTime?52:34,textAlign:"center"}}>{ex.isTime?`⏱ ${ex.reps}s`:ex.reps}</span>
-                <button onClick={()=>setExercises(p=>p.map((x,j)=>j===i?{...x,reps:ex.reps+5}:x))} style={{background:G.border,border:"none",borderRadius:4,color:G.text,width:26,height:26,cursor:"pointer",fontSize:16,fontFamily:"monospace"}}>+</button>
+                {ex.isChain?(
+                  <span style={{fontFamily:"'Share Tech Mono',monospace",fontSize:10,fontWeight:700,color:"#FF9500",whiteSpace:"nowrap"}}>⛓ {ex.steps.length} STEPS</span>
+                ):(<>
+                  <button onClick={()=>setExercises(p=>p.map((x,j)=>j===i?{...x,reps:Math.max(1,x.reps-5)}:x))} style={{background:G.border,border:"none",borderRadius:4,color:G.text,width:26,height:26,cursor:"pointer",fontSize:16,fontFamily:"monospace"}}>−</button>
+                  <span style={{fontFamily:"'Share Tech Mono',monospace",fontSize:ex.isTime?11:16,fontWeight:700,color:ex.isTime?"#0A84FF":"#FFD60A",width:ex.isTime?52:34,textAlign:"center"}}>{ex.isTime?`⏱ ${ex.reps}s`:ex.reps}</span>
+                  <button onClick={()=>setExercises(p=>p.map((x,j)=>j===i?{...x,reps:ex.reps+5}:x))} style={{background:G.border,border:"none",borderRadius:4,color:G.text,width:26,height:26,cursor:"pointer",fontSize:16,fontFamily:"monospace"}}>+</button>
+                </>)}
                 <button onClick={()=>setExercises(p=>p.filter((_,j)=>j!==i))} style={{background:"transparent",border:"none",color:"#FF3B30",cursor:"pointer",fontSize:13,padding:"2px 4px"}}>✕</button>
               </div>
             ))}
@@ -344,14 +357,17 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     return()=>aRef.current&&aRef.current.off();
   },[selected]);
 
-  // Sync countdown depuis Firebase timerStarted
+  // Sync countdown depuis Firebase timerStarted (chain ou exercice simple)
   useEffect(()=>{
     clearInterval(timerRef.current);
     const i=athlete?.currentExercise||0;
     const ex=athlete?.exercises?.[i];
-    if(!ex||ex.type!=="time"||!ex.timerStarted||ex.done){setCountdown(null);return;}
-    const elapsed=Math.floor((Date.now()-ex.timerStarted)/1000);
-    const rem=Math.max(0,(ex.duration||0)-elapsed);
+    let activeStep;
+    if(ex?.type==="chain"){const si=ex.currentStep||0;activeStep=ex.steps?.[si];}
+    else activeStep=ex;
+    if(!activeStep||activeStep.type!=="time"||!activeStep.timerStarted||activeStep.done){setCountdown(null);return;}
+    const elapsed=Math.floor((Date.now()-activeStep.timerStarted)/1000);
+    const rem=Math.max(0,(activeStep.duration||0)-elapsed);
     setCountdown(rem);
     if(rem>0)timerRef.current=setInterval(()=>setCountdown(c=>Math.max(0,(c||1)-1)),1000);
     return()=>clearInterval(timerRef.current);
@@ -365,30 +381,34 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     if(ex?.type==="time"&&!ex.done&&!ex.failed)completeTimeEx();
   },[countdown]);
 
+  const _advance=async(upd,i)=>{
+    if(i+1>=athlete.exercises.length){const snap=await db.ref(`sessions/${sessionId}/startTime`).get();upd.finishTime=Date.now()-snap.val();}
+    else upd.currentExercise=i+1;
+  };
+
   const addRep=async()=>{
     if(!athlete||athlete.finishTime)return;
     setFlash(true);setTimeout(()=>setFlash(false),100);
-    const idx=athlete.currentExercise;
-    const ex=athlete.exercises[idx];
+    const i=athlete.currentExercise||0;
+    const ex=athlete.exercises[i];
+    if(ex.type==="chain"){
+      const si=ex.currentStep||0;const s=ex.steps[si];
+      if(s.type==="time")return;
+      const next=(s.completedReps||0)+1;
+      const p=`exercises/${i}/steps/${si}`;
+      if(next>=s.targetReps){
+        const upd={[`${p}/completedReps`]:next,[`${p}/done`]:true};
+        if(si+1>=ex.steps.length){upd[`exercises/${i}/done`]=true;await _advance(upd,i);}
+        else upd[`exercises/${i}/currentStep`]=si+1;
+        await aRef.current.update(upd);
+      }else await aRef.current.child(`${p}/completedReps`).set(next);
+      return;
+    }
     const next=(ex.completedReps||0)+1;
     if(next>=ex.targetReps){
-      const upd={[`exercises/${idx}/completedReps`]:next,[`exercises/${idx}/done`]:true};
-      if(idx+1>=athlete.exercises.length){
-        const snap=await db.ref(`sessions/${sessionId}/startTime`).get();
-        upd.finishTime=Date.now()-snap.val();
-      } else {upd.currentExercise=idx+1;}
-      await aRef.current.update(upd);
-    } else {
-      await aRef.current.child(`exercises/${idx}/completedReps`).set(next);
-    }
-  };
-
-  const rmRep=async()=>{
-    if(!athlete||athlete.finishTime)return;
-    const idx=athlete.currentExercise;
-    const cur=athlete.exercises[idx].completedReps||0;
-    if(cur<=0)return;
-    await aRef.current.child(`exercises/${idx}/completedReps`).set(cur-1);
+      const upd={[`exercises/${i}/completedReps`]:next,[`exercises/${i}/done`]:true};
+      await _advance(upd,i);await aRef.current.update(upd);
+    }else await aRef.current.child(`exercises/${i}/completedReps`).set(next);
   };
 
   const addNoRep=async()=>{
@@ -397,28 +417,39 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     await aRef.current.update({noReps:(athlete.noReps||0)+1});
   };
 
+  const launchTimer=async()=>{
+    if(!athlete||athlete.finishTime)return;
+    const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
+    if(ex.type==="chain"){const si=ex.currentStep||0;await aRef.current.child(`exercises/${i}/steps/${si}/timerStarted`).set(Date.now());}
+    else await aRef.current.child(`exercises/${i}/timerStarted`).set(Date.now());
+  };
+
   const completeTimeEx=async()=>{
     if(!athlete||athlete.finishTime)return;
-    const i=athlete.currentExercise||0;
+    const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
+    if(ex.type==="chain"){
+      const si=ex.currentStep||0;const p=`exercises/${i}/steps/${si}`;
+      const upd={[`${p}/done`]:true,[`${p}/timerStarted`]:null};
+      if(si+1>=ex.steps.length){upd[`exercises/${i}/done`]=true;await _advance(upd,i);}
+      else upd[`exercises/${i}/currentStep`]=si+1;
+      await aRef.current.update(upd);return;
+    }
     const upd={[`exercises/${i}/done`]:true,[`exercises/${i}/timerStarted`]:null};
-    if(i+1>=athlete.exercises.length){const snap=await db.ref(`sessions/${sessionId}/startTime`).get();upd.finishTime=Date.now()-snap.val();}
-    else upd.currentExercise=i+1;
-    await aRef.current.update(upd);
+    await _advance(upd,i);await aRef.current.update(upd);
   };
 
   const failTimeEx=async()=>{
     if(!athlete||athlete.finishTime)return;
-    const i=athlete.currentExercise||0;
+    const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
+    if(ex.type==="chain"){
+      const si=ex.currentStep||0;const p=`exercises/${i}/steps/${si}`;
+      const upd={[`${p}/failed`]:true,[`${p}/timerStarted`]:null};
+      if(si+1>=ex.steps.length){upd[`exercises/${i}/done`]=true;await _advance(upd,i);}
+      else upd[`exercises/${i}/currentStep`]=si+1;
+      await aRef.current.update(upd);return;
+    }
     const upd={[`exercises/${i}/failed`]:true,[`exercises/${i}/timerStarted`]:null};
-    if(i+1>=athlete.exercises.length){const snap=await db.ref(`sessions/${sessionId}/startTime`).get();upd.finishTime=Date.now()-snap.val();}
-    else upd.currentExercise=i+1;
-    await aRef.current.update(upd);
-  };
-
-  const launchTimer=async()=>{
-    if(!athlete||athlete.finishTime)return;
-    const i=athlete.currentExercise||0;
-    await aRef.current.child(`exercises/${i}/timerStarted`).set(Date.now());
+    await _advance(upd,i);await aRef.current.update(upd);
   };
 
   const startAll=async()=>db.ref(`sessions/${sessionId}`).update({started:true,startTime:Date.now()});
@@ -454,8 +485,16 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
   const idx=athlete.currentExercise||0;
   const ex=athlete.exercises?.[idx];
   const finished=!!athlete.finishTime;
-  const isTimeEx=ex?.type==="time";
-  const pct=isTimeEx?(countdown!==null?Math.max(0,1-countdown/(ex.duration||1)):0):ex?Math.min(1,(ex.completedReps||0)/ex.targetReps):1;
+  const isChain=ex?.type==="chain";
+  const sIdx=isChain?(ex.currentStep||0):0;
+  const step=isChain?ex?.steps?.[sIdx]:ex;
+  const isTimeStep=step?.type==="time";
+  const pct=(()=>{
+    if(!ex)return 1;
+    if(isChain){const done=ex.steps.filter(s=>s.done).length;const cur=isTimeStep?(countdown!==null?Math.max(0,1-countdown/(step.duration||1)):0):Math.min(1,(step?.completedReps||0)/(step?.targetReps||1));return Math.max(0,Math.min(1,(done+cur)/ex.steps.length));}
+    if(isTimeStep)return countdown!==null?Math.max(0,1-countdown/(step.duration||1)):step?.done?1:0;
+    return Math.min(1,(step?.completedReps||0)/(step?.targetReps||1));
+  })();
 
   // ── Terminé ───────────────────────────────────────────────────────────────
   if(finished)return(
@@ -492,28 +531,32 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
 
       {/* Infos athlète */}
       <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"16px 20px",borderBottom:`3px solid ${color}`,background:`rgba(${rgb(color)},0.04)`}}>
-        <div style={{fontSize:10,letterSpacing:5,color:G.muted,marginBottom:8}}>EXERCICE {idx+1} / {athlete.exercises?.length}</div>
-        <div style={{fontSize:46,fontWeight:900,color,letterSpacing:1,lineHeight:1,marginBottom:10,textAlign:"center"}}>{selected.toUpperCase()}</div>
-        <div style={{fontSize:24,color:G.text,letterSpacing:2,marginBottom:18,textAlign:"center",fontWeight:600}}>{ex?.name?.toUpperCase()}</div>
-        {isTimeEx?(
+        <div style={{fontSize:10,letterSpacing:4,color:G.muted,marginBottom:8,textAlign:"center"}}>
+          EXERCICE {idx+1} / {athlete.exercises?.length}
+          {isChain&&<span style={{color:"#FF9500"}}> · ⛓ STEP {sIdx+1}/{ex.steps.length}</span>}
+        </div>
+        <div style={{fontSize:46,fontWeight:900,color,letterSpacing:1,lineHeight:1,marginBottom:6,textAlign:"center"}}>{selected.toUpperCase()}</div>
+        {isChain&&<div style={{fontSize:11,color:G.muted,letterSpacing:1,marginBottom:4,textAlign:"center",maxWidth:"90%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ex.name.toUpperCase()}</div>}
+        <div style={{fontSize:isChain?26:24,color:G.text,letterSpacing:2,marginBottom:18,textAlign:"center",fontWeight:700}}>{step?.name?.toUpperCase()}</div>
+        {isTimeStep?(
           <div style={{fontFamily:"'Share Tech Mono',monospace",lineHeight:1,textAlign:"center"}}>
-            <span style={{fontSize:90,fontWeight:700,color:countdown===0?"#30D158":color}}>{countdown!==null?countdown:ex.duration}</span>
+            <span style={{fontSize:90,fontWeight:700,color:countdown===0?"#30D158":color}}>{countdown!==null?countdown:step.duration}</span>
             <span style={{fontSize:36,color:G.muted}}> s</span>
-            {countdown!==null&&<div style={{fontSize:12,letterSpacing:3,color:G.muted,marginTop:6}}>{countdown===0?"TEMPS !":`/ ${ex.duration}s`}</div>}
+            {countdown!==null&&<div style={{fontSize:12,letterSpacing:3,color:G.muted,marginTop:6}}>{countdown===0?"TEMPS !":`/ ${step.duration}s`}</div>}
           </div>
         ):(
           <div style={{fontFamily:"'Share Tech Mono',monospace",lineHeight:1,textAlign:"center"}}>
-            <span style={{fontSize:90,fontWeight:700,color}}>{ex?.completedReps||0}</span>
-            <span style={{fontSize:36,color:G.muted}}> / {ex?.targetReps}</span>
+            <span style={{fontSize:90,fontWeight:700,color}}>{step?.completedReps||0}</span>
+            <span style={{fontSize:36,color:G.muted}}> / {step?.targetReps}</span>
           </div>
         )}
         <div style={{width:"70%",maxWidth:260,height:6,background:G.border,borderRadius:100,marginTop:18,overflow:"hidden"}}>
-          <div style={{height:"100%",width:`${pct*100}%`,background:isTimeEx&&countdown===0?"#30D158":color,borderRadius:100,transition:"width .15s",boxShadow:`0 0 10px rgba(${rgb(color)},0.6)`}}/>
+          <div style={{height:"100%",width:`${pct*100}%`,background:isTimeStep&&countdown===0?"#30D158":color,borderRadius:100,transition:"width .15s",boxShadow:`0 0 10px rgba(${rgb(color)},0.6)`}}/>
         </div>
       </div>
 
       {/* Zone basse — reps ou timer */}
-      {isTimeEx?(
+      {isTimeStep?(
         countdown===null?(
           <button onPointerDown={e=>{e.preventDefault();launchTimer();}}
             style={{height:"50vh",flexShrink:0,background:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:60,fontWeight:900,letterSpacing:4,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:8}}>
@@ -602,9 +645,18 @@ function MainScreen({sessionId}){
       <div style={{flex:1,display:"grid",gridTemplateColumns:`repeat(${athletes.length},1fr)`,gap:1,background:G.border,overflow:"hidden"}}>
         {athletes.map(a=>{
           const color=a.color,idx=a.currentExercise||0,ex=a.exercises?.[idx],finished=!!a.finishTime;
-          const isTimeEx=ex?.type==="time";
-          const timeRem=isTimeEx&&ex?.timerStarted&&!ex?.done?Math.max(0,(ex.duration||0)-Math.floor((Date.now()+tick*0-ex.timerStarted)/1000)):null;
-          const pct=isTimeEx?(timeRem!==null?Math.max(0,1-timeRem/(ex.duration||1)):ex?.done?1:0):ex?Math.min(1,(ex.completedReps||0)/ex.targetReps):1;
+          const isChainEx=ex?.type==="chain";
+          const chainSIdx=isChainEx?(ex.currentStep||0):0;
+          const chainStep=isChainEx?ex?.steps?.[chainSIdx]:null;
+          const activeForTime=isChainEx?chainStep:ex;
+          const isTimeEx=activeForTime?.type==="time";
+          const timeRem=isTimeEx&&activeForTime?.timerStarted&&!activeForTime?.done?Math.max(0,(activeForTime.duration||0)-Math.floor((Date.now()-activeForTime.timerStarted+tick*0)/1000)):null;
+          const pct=(()=>{
+            if(!ex)return 1;
+            if(isChainEx){const done=ex.steps.filter(s=>s.done).length;const cur=isTimeEx?(timeRem!==null?Math.max(0,1-timeRem/(activeForTime.duration||1)):activeForTime?.done?1:0):Math.min(1,(chainStep?.completedReps||0)/(chainStep?.targetReps||1));return Math.max(0,Math.min(1,(done+cur)/ex.steps.length));}
+            if(isTimeEx)return timeRem!==null?Math.max(0,1-timeRem/(ex.duration||1)):ex?.done?1:0;
+            return ex?Math.min(1,(ex.completedReps||0)/ex.targetReps):1;
+          })();
           return(
             <div key={a.name} style={{background:G.bg,display:"flex",flexDirection:"column",overflow:"hidden"}}>
               <div style={{background:color,padding:"12px 16px",flexShrink:0}}>
@@ -617,8 +669,10 @@ function MainScreen({sessionId}){
               <div style={{padding:"14px 16px",borderBottom:`1px solid ${G.border}`,flexShrink:0,background:`rgba(${rgb(color)},0.05)`}}>
                 <div style={{fontSize:11,letterSpacing:3,color,marginBottom:2}}>{ex?.name?.toUpperCase()}</div>
                 <div style={{display:"flex",alignItems:"baseline",gap:10,flexWrap:"wrap"}}>
-                  <div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:58,fontWeight:700,color:isTimeEx&&ex?.done?"#30D158":isTimeEx&&ex?.failed?"#FF3B30":color,lineHeight:1}}>
-                    {isTimeEx?(
+                  <div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:isChainEx?38:58,fontWeight:700,color:isTimeEx&&activeForTime?.done?"#30D158":isTimeEx&&activeForTime?.failed?"#FF3B30":color,lineHeight:1}}>
+                    {isChainEx?(
+                      ex?.done?<span style={{fontSize:40}}>✓</span>:<span>{ex.steps.filter(s=>s.done).length}/{ex.steps.length}<span style={{fontSize:16,color:G.muted}}> ⛓</span>{isTimeEx&&timeRem!==null?<span style={{fontSize:22}}> {timeRem}s</span>:isTimeEx?<span style={{fontSize:14}}>⏱</span>:<span style={{fontSize:18}}> {chainStep?.completedReps||0}/{chainStep?.targetReps}</span>}</span>
+                    ):isTimeEx?(
                       ex?.done?"✓":ex?.failed?"✕":timeRem!==null?<span>{timeRem}<span style={{fontSize:22,color:G.muted}}> s</span></span>:<span style={{fontSize:32}}>⏱ {ex?.duration}s</span>
                     ):(
                       <span>{ex?.completedReps||0}<span style={{fontSize:22,color:G.muted}}> / {ex?.targetReps}</span></span>
@@ -628,6 +682,7 @@ function MainScreen({sessionId}){
                     🚩×{a.noReps||0}
                   </div>
                 </div>
+                {isChainEx&&!ex?.done&&<div style={{fontSize:10,color:G.muted,letterSpacing:2,marginTop:4}}>{chainStep?.name?.toUpperCase()}</div>}
               </div>
               <div style={{flex:1,overflow:"auto"}}>
                 {(a.exercises||[]).map((e,i)=>(
@@ -637,7 +692,7 @@ function MainScreen({sessionId}){
                     </div>
                     <div style={{flex:1,fontSize:12,fontWeight:i===idx?700:400,color:e.done?color:i===idx?G.text:G.muted}}>{e.name}</div>
                     <div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:11,color:e.done?color:e.failed?"#FF3B30":i===idx?"#FFD60A":G.muted}}>
-                      {e.type==="time"?(e.done?"✓":e.failed?"✕":`${e.duration}s`):(i<idx||e.done?e.targetReps:i===idx?e.completedReps||0:0)+(e.type==="time"?"":"/"+e.targetReps)}
+                      {e.type==="chain"?`⛓ ${e.steps.filter(s=>s.done).length}/${e.steps.length}`:e.type==="time"?(e.done?"✓":e.failed?"✕":`${e.duration}s`):(i<idx||e.done?e.targetReps:i===idx?e.completedReps||0:0)+(e.type==="time"?"":"/"+e.targetReps)}
                     </div>
                   </div>
                 ))}
