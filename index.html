@@ -66,30 +66,46 @@ function getACtx(){
   if(_actx.state==="suspended")_actx.resume();
   return _actx;
 }
-function _tone(freq,type,dur,delay=0,gain=0.35){
+function _osc(ctx,freq,type,t,dur,g0,g1){
   try{
-    const ctx=getACtx();const o=ctx.createOscillator();const g=ctx.createGain();
+    const o=ctx.createOscillator();const g=ctx.createGain();
     o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=freq;
-    const t=ctx.currentTime+delay;
-    g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(g0,t+0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    if(g1!==undefined)g.gain.setValueAtTime(g1,t+0.005);
     o.start(t);o.stop(t+dur+0.01);
   }catch(e){}
 }
-const beepShort=()=>_tone(900,"square",0.10,0,0.3);
-const beepLong=()=>_tone(900,"square",0.55,0,0.3);
+// Tick métronome — sinus pur, court et net, style shot-clock
+const beepShort=()=>{try{const ctx=getACtx();const t=ctx.currentTime;_osc(ctx,880,"sine",t,0.09,0.5);}catch(e){}};
+// Coup final — double ton grave+aigu, plus long
+const beepLong=()=>{try{const ctx=getACtx();const t=ctx.currentTime;_osc(ctx,440,"sine",t,0.30,0.55);_osc(ctx,880,"sine",t,0.22,0.35);}catch(e){}};
+// Buzzer no-rep — impact bruit blanc + descente grave
 function soundNoRep(){
   try{
-    const ctx=getACtx();const o=ctx.createOscillator();const g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);o.type="sawtooth";
-    o.frequency.setValueAtTime(380,ctx.currentTime);
-    o.frequency.linearRampToValueAtTime(100,ctx.currentTime+0.45);
-    g.gain.setValueAtTime(0.45,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.48);
-    o.start(ctx.currentTime);o.stop(ctx.currentTime+0.5);
+    const ctx=getACtx();const t=ctx.currentTime;
+    const len=Math.floor(ctx.sampleRate*0.14);
+    const buf=ctx.createBuffer(1,len,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let k=0;k<len;k++)d[k]=(Math.random()*2-1)*Math.exp(-k/len*7);
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const gn=ctx.createGain();src.connect(gn);gn.connect(ctx.destination);
+    gn.gain.setValueAtTime(0.7,t);gn.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+    src.start(t);
+    const o=ctx.createOscillator();const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.type="sine";
+    o.frequency.setValueAtTime(240,t);o.frequency.exponentialRampToValueAtTime(55,t+0.28);
+    g.gain.setValueAtTime(0.6,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.30);
+    o.start(t);o.stop(t+0.31);
   }catch(e){}
 }
+// Fanfare victoire — gamme montante sinus + accord final style podium
 function soundVictory(){
-  [261.63,329.63,392.00,493.88,523.25].forEach((f,i)=>_tone(f,"sine",0.32,i*0.16,0.4));
-  setTimeout(()=>[523.25,659.25,783.99].forEach(f=>_tone(f,"sine",0.7,0,0.3)),860);
+  try{
+    const ctx=getACtx();const t=ctx.currentTime;
+    [261.63,329.63,392,523.25,659.25,783.99].forEach((f,i)=>_osc(ctx,f,"sine",t+i*0.11,0.48,0.32));
+    [523.25,659.25,783.99,1046.50].forEach(f=>_osc(ctx,f,"sine",t+0.75,1.1,0.20));
+  }catch(e){}
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -174,7 +190,7 @@ function SetupScreen(){
         const tE=seg.match(/^(.+?)\s+(\d+)s$/i);
         if(tE){const dur=parseInt(tE[2]),nm=tE[1].replace(/\s+/g," ").trim();if(nm.length>1&&dur>=1&&dur<=3600)return{name:nm,isTime:true,duration:dur};}
         const m=seg.match(/^(\d+)\s+(.+)$/);
-        if(m){const reps=parseInt(m[1]);if(reps>=1&&reps<=500){const name=m[2].replace(/\s+/g," ").trim();if(name.length>1)return{name,reps};}}
+        if(m){const reps=parseInt(m[1]);if(reps>=1&&reps<=500){let name=m[2].replace(/\s+/g," ").trim();const ub=/\bunbroken\b/i.test(name);if(ub)name=name.replace(/\bunbroken\b/gi,"").replace(/\s+/g," ").trim();if(name.length>1)return{name,reps,...(ub?{unbroken:true}:{})};}}
         return null;
       };
 
@@ -185,6 +201,10 @@ function SetupScreen(){
         if(s&&!s.isTime)result[result.length-1].fallback={name:s.name,reps:s.reps};
         continue;
       }
+
+      // Détection flag UNBROKEN sur toute la ligne
+      const lineUB=/\bunbroken\b/i.test(line);
+      if(lineUB)line=line.replace(/\bunbroken\b/gi,"").replace(/\s+/g," ").trim();
 
       // Bloc [contenu] ou (contenu)
       const bm=line.match(/^[\[\(]([^\]\)]+)[\]\)](.*)$/i);
@@ -198,7 +218,7 @@ function SetupScreen(){
           const steps=inside.split(/\s+\+\s+/).map(parseSeg).filter(Boolean);
           if(steps.length>1){
             const chainName=steps.map(s=>s.isTime?`${s.duration}s ${s.name}`:`${s.reps} ${s.name}`).join(' + ');
-            result.push({name:chainName,isChain:true,steps,reps});
+            result.push({name:chainName,isChain:true,steps,reps,...(lineUB?{unbroken:true}:{})});
             continue;
           }
         }
@@ -206,7 +226,7 @@ function SetupScreen(){
         const wM=after.match(/@[\d.,]+\s*[kK][gG]/i);
         const suffix=wM?" "+wM[0].toUpperCase():"";
         const name=(inside+suffix).replace(/\s+/g," ").trim();
-        if(name.length>1)result.push({name,reps});
+        if(name.length>1)result.push({name,reps,...(lineUB?{unbroken:true}:{})});
         continue;
       }
 
@@ -216,11 +236,11 @@ function SetupScreen(){
         const steps=segs.map(parseSeg).filter(Boolean);
         if(steps.length>0){
           const chainName=steps.map(s=>s.isTime?`${s.duration}s ${s.name}`:`${s.reps} ${s.name}`).join(' + ');
-          result.push({name:chainName,isChain:true,steps,reps:1});
+          result.push({name:chainName,isChain:true,steps,reps:1,...(lineUB?{unbroken:true}:{})});
         }
       }else{
         const s=parseSeg(segs[0]);
-        if(s)result.push(s.isTime?{name:s.name,isTime:true,reps:s.duration}:s);
+        if(s){const base=s.isTime?{name:s.name,isTime:true,reps:s.duration}:s;result.push({...base,...(lineUB&&!base.unbroken?{unbroken:true}:{})});}
       }
     }
     if(result.length===0){setPasteError("Aucun exercice détecté. Vérifie que chaque ligne commence par un nombre.");return;}
@@ -236,7 +256,7 @@ function SetupScreen(){
         id,phase:phase||"Battle",started:false,startTime:null,
         athletes:Object.fromEntries(active.map(a=>[a.name,{
           color:a.color,currentExercise:0,finishTime:null,noReps:0,
-          exercises:exercises.map(ex=>ex.isChain?{name:ex.name,type:"chain",currentStep:0,done:false,steps:ex.steps.map(s=>s.isTime?{name:s.name,type:"time",duration:s.duration,timerStarted:null,done:false,failed:false}:{name:s.name,targetReps:s.reps,completedReps:0,done:false})}:ex.isTime?{name:ex.name,type:"time",duration:Number(ex.reps),timerStarted:null,done:false,failed:false}:{name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false,...(ex.fallback?{fallback:{name:ex.fallback.name,targetReps:Number(ex.fallback.reps)}}:{})})
+          exercises:exercises.map(ex=>ex.isChain?{name:ex.name,type:"chain",currentStep:0,done:false,...(ex.unbroken?{unbroken:true}:{}),steps:ex.steps.map(s=>s.isTime?{name:s.name,type:"time",duration:s.duration,timerStarted:null,done:false,failed:false}:{name:s.name,targetReps:s.reps,completedReps:0,done:false})}:ex.isTime?{name:ex.name,type:"time",duration:Number(ex.reps),timerStarted:null,done:false,failed:false}:{name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false,...(ex.unbroken?{unbroken:true}:{}),...(ex.fallback?{fallback:{name:ex.fallback.name,targetReps:Number(ex.fallback.reps)}}:{})})
         }]))
       });
       setSessionId(id);
@@ -608,6 +628,19 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     }
   };
 
+  const breakUnbroken=async()=>{
+    if(!athlete||athlete.finishTime)return;
+    soundNoRep();
+    setFlashNR(true);setTimeout(()=>setFlashNR(false),200);
+    const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
+    const upd={noReps:(athlete.noReps||0)+1};
+    if(ex.type==="chain"){
+      upd[`exercises/${i}/currentStep`]=0;upd[`exercises/${i}/done`]=false;
+      (ex.steps||[]).forEach((_,si)=>{upd[`exercises/${i}/steps/${si}/completedReps`]=0;upd[`exercises/${i}/steps/${si}/done`]=false;});
+    }else{upd[`exercises/${i}/completedReps`]=0;}
+    await aRef.current.update(upd);
+  };
+
   const startAll=async()=>db.ref(`sessions/${sessionId}`).update({started:true,startTime:Date.now()});
 
   // ── Sélecteur d'athlète ───────────────────────────────────────────────────
@@ -650,6 +683,8 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
   // États du timer ISO
   const isoTimerRunning=isTimeStep&&!!step?.timerStarted&&!step?.done;
   const isoTimerPaused=isTimeStep&&!step?.timerStarted&&!!(step?.accumulatedMs)&&!step?.done;
+  // Unbroken
+  const isUnbroken=!!ex?.unbroken&&!fallbackMode;
   const pct=(()=>{
     if(!ex)return 1;
     if(isChain){const done=ex.steps.filter(s=>s.done).length;const cur=isTimeStep?(countdown!==null?Math.max(0,1-countdown/(step.duration||1)):0):Math.min(1,(step?.completedReps||0)/(step?.targetReps||1));return Math.max(0,Math.min(1,(done+cur)/ex.steps.length));}
@@ -707,14 +742,14 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
                 border:`1px solid ${done||cur?color:G.border}`,
                 opacity:upcoming?0.45:1,transition:"all .2s"
               }}>
-                <div style={{fontSize:8,fontWeight:900,letterSpacing:1,color:done||cur?color:G.muted,lineHeight:1}}>
+                <div style={{fontSize:8,fontWeight:900,letterSpacing:1,color:done||cur?color:"#9BA3B8",lineHeight:1}}>
                   {done?"✓":String(i+1).padStart(2,"0")}
                 </div>
-                <div style={{fontSize:9,fontWeight:cur?700:400,color:done?color:cur?G.text:G.muted,whiteSpace:"nowrap",maxWidth:52,overflow:"hidden",textOverflow:"ellipsis",lineHeight:1.2,textAlign:"center"}}>
+                <div style={{fontSize:9,fontWeight:cur?700:400,color:done?color:cur?G.text:G.text,whiteSpace:"nowrap",maxWidth:52,overflow:"hidden",textOverflow:"ellipsis",lineHeight:1.2,textAlign:"center"}}>
                   {shortName.toUpperCase()}
                 </div>
-                <div style={{fontSize:8,fontFamily:"monospace",color:done?color:cur?"#FFD60A":G.muted,lineHeight:1}}>
-                  {exQty}
+                <div style={{fontSize:8,fontFamily:"monospace",color:done?color:cur?"#FFD60A":"#9BA3B8",lineHeight:1}}>
+                  {exQty}{e.unbroken?" ⚡":""}
                 </div>
               </div>
             );
@@ -731,6 +766,11 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
           }
         </div>
         <div style={{fontSize:42,fontWeight:900,color:fallbackMode?"#FF9500":color,letterSpacing:1,lineHeight:1,marginBottom:4,textAlign:"center"}}>{selected.toUpperCase()}</div>
+        {isUnbroken&&(
+          <div style={{display:"inline-flex",alignItems:"center",gap:5,padding:"2px 10px",borderRadius:20,background:"rgba(255,149,0,0.14)",border:"1px solid #FF9500",fontSize:10,fontWeight:900,letterSpacing:3,color:"#FF9500",marginBottom:4}}>
+            ⚡ UNBROKEN — SANS CASSER
+          </div>
+        )}
         {!fallbackMode&&isChain&&<div style={{fontSize:11,color:G.muted,letterSpacing:1,marginBottom:4,textAlign:"center",maxWidth:"90%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ex.name.toUpperCase()}</div>}
         <div style={{fontSize:isChain?24:22,color:G.text,letterSpacing:2,marginBottom:12,textAlign:"center",fontWeight:700}}>
           {fallbackMode
@@ -868,17 +908,25 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
           </button>
         </div>
       ):(
-        /* Exercice normal : + rep + NO REP */
-        <div style={{height:"50vh",display:"flex",flexShrink:0}}>
-          <button className="plus-btn" onPointerDown={e=>{e.preventDefault();addRep();}}
-            style={{flex:1,background:flash?`rgba(${rgb(color)},0.3)`:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,borderRight:`1px solid ${G.border}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:120,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s"}}>
-            +
-          </button>
-          <button onPointerDown={e=>{e.preventDefault();addNoRep();}}
-            style={{flex:1,background:flashNR?"rgba(255,59,48,0.28)":"rgba(255,59,48,0.08)",border:"none",borderTop:"3px solid #FF3B30",color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:72,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s",gap:8}}>
-            🚩
-            <span style={{fontSize:16,letterSpacing:3,fontWeight:700}}>NO-REP</span>
-          </button>
+        /* Exercice normal : + rep + NO REP (+ BREAK si unbroken) */
+        <div style={{height:"50vh",display:"flex",flexDirection:"column",flexShrink:0}}>
+          <div style={{flex:1,display:"flex"}}>
+            <button className="plus-btn" onPointerDown={e=>{e.preventDefault();addRep();}}
+              style={{flex:1,background:flash?`rgba(${rgb(color)},0.3)`:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,borderRight:`1px solid ${G.border}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:isUnbroken?90:120,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s"}}>
+              +
+            </button>
+            <button onPointerDown={e=>{e.preventDefault();addNoRep();}}
+              style={{flex:1,background:flashNR?"rgba(255,59,48,0.28)":"rgba(255,59,48,0.08)",border:"none",borderTop:"3px solid #FF3B30",color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:isUnbroken?52:72,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s",gap:8}}>
+              🚩
+              <span style={{fontSize:14,letterSpacing:3,fontWeight:700}}>NO-REP</span>
+            </button>
+          </div>
+          {isUnbroken&&(
+            <button onPointerDown={e=>{e.preventDefault();breakUnbroken();}}
+              style={{height:64,background:flashNR?"rgba(255,149,0,0.3)":"rgba(255,149,0,0.1)",border:"none",borderTop:"2px solid #FF9500",color:"#FF9500",fontFamily:"'Barlow Condensed',sans-serif",fontSize:17,fontWeight:900,letterSpacing:4,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,WebkitUserSelect:"none",userSelect:"none",transition:"background .1s",flexShrink:0}}>
+              ✂ BREAK — RECOMMENCE LA LIGNE
+            </button>
+          )}
         </div>
       )}
     </div>
