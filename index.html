@@ -21,9 +21,11 @@ input[type=color]::-webkit-color-swatch{border:none;border-radius:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes victory-pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:#1E2330;border-radius:2px}
 .plus-btn:active{filter:brightness(1.4)}
+.strip-hide::-webkit-scrollbar{display:none}
 </style>
 </head>
 <body>
@@ -56,6 +58,40 @@ function genId(){return Math.random().toString(36).slice(2,7).toUpperCase();}
 function Label({children}){return<div style={{fontSize:11,letterSpacing:4,color:G.muted,fontWeight:700,borderLeft:"3px solid #1E2330",paddingLeft:10,marginBottom:14}}>{children}</div>;}
 function Loader(){return<div style={{height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:G.muted,fontSize:18,letterSpacing:4}}>CONNEXION…</div>;}
 function Spinner(){return<span style={{display:"inline-block",width:10,height:10,border:"2px solid #4A5068",borderTopColor:PALETTE[1],borderRadius:"50%",animation:"spin .6s linear infinite"}}/>;}
+
+// ── WEB AUDIO ─────────────────────────────────────────────────────────────────
+let _actx=null;
+function getACtx(){
+  if(!_actx)_actx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_actx.state==="suspended")_actx.resume();
+  return _actx;
+}
+function _tone(freq,type,dur,delay=0,gain=0.35){
+  try{
+    const ctx=getACtx();const o=ctx.createOscillator();const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=freq;
+    const t=ctx.currentTime+delay;
+    g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur+0.01);
+  }catch(e){}
+}
+const beepShort=()=>_tone(900,"square",0.10,0,0.3);
+const beepLong=()=>_tone(900,"square",0.55,0,0.3);
+function soundNoRep(){
+  try{
+    const ctx=getACtx();const o=ctx.createOscillator();const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.type="sawtooth";
+    o.frequency.setValueAtTime(380,ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(100,ctx.currentTime+0.45);
+    g.gain.setValueAtTime(0.45,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.48);
+    o.start(ctx.currentTime);o.stop(ctx.currentTime+0.5);
+  }catch(e){}
+}
+function soundVictory(){
+  [261.63,329.63,392.00,493.88,523.25].forEach((f,i)=>_tone(f,"sine",0.32,i*0.16,0.4));
+  setTimeout(()=>[523.25,659.25,783.99].forEach(f=>_tone(f,"sine",0.7,0,0.3)),860);
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 const params=new URLSearchParams(window.location.search);
 const urlMode=params.get("mode"),urlSession=params.get("session"),urlAthlete=params.get("athlete");
@@ -142,6 +178,14 @@ function SetupScreen(){
         return null;
       };
 
+      // ── Exercice de remplacement : ligne commençant par * ──────────────────
+      if(line.startsWith("*")&&result.length>0){
+        const inner=line.slice(1).trim();
+        const s=parseSeg(inner);
+        if(s&&!s.isTime)result[result.length-1].fallback={name:s.name,reps:s.reps};
+        continue;
+      }
+
       // Bloc [contenu] ou (contenu)
       const bm=line.match(/^[\[\(]([^\]\)]+)[\]\)](.*)$/i);
       if(bm){
@@ -192,7 +236,7 @@ function SetupScreen(){
         id,phase:phase||"Battle",started:false,startTime:null,
         athletes:Object.fromEntries(active.map(a=>[a.name,{
           color:a.color,currentExercise:0,finishTime:null,noReps:0,
-          exercises:exercises.map(ex=>ex.isChain?{name:ex.name,type:"chain",currentStep:0,done:false,steps:ex.steps.map(s=>s.isTime?{name:s.name,type:"time",duration:s.duration,timerStarted:null,done:false,failed:false}:{name:s.name,targetReps:s.reps,completedReps:0,done:false})}:ex.isTime?{name:ex.name,type:"time",duration:Number(ex.reps),timerStarted:null,done:false,failed:false}:{name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false})
+          exercises:exercises.map(ex=>ex.isChain?{name:ex.name,type:"chain",currentStep:0,done:false,steps:ex.steps.map(s=>s.isTime?{name:s.name,type:"time",duration:s.duration,timerStarted:null,done:false,failed:false}:{name:s.name,targetReps:s.reps,completedReps:0,done:false})}:ex.isTime?{name:ex.name,type:"time",duration:Number(ex.reps),timerStarted:null,done:false,failed:false}:{name:ex.name,targetReps:Number(ex.reps),completedReps:0,done:false,...(ex.fallback?{fallback:{name:ex.fallback.name,targetReps:Number(ex.fallback.reps)}}:{})})
         }]))
       });
       setSessionId(id);
@@ -277,10 +321,11 @@ function SetupScreen(){
               <div style={{fontSize:12,color:G.muted,lineHeight:1.6}}>
                 Copie le texte de ton PDF et colle-le ici.<br/>
                 <span style={{color:"#FFD60A"}}>Format attendu :</span> une ligne par exercice avec le nombre de reps.<br/>
-                <span style={{fontFamily:"monospace",fontSize:11}}>Pull-ups 25 | Dips: 30 | 10 Muscle-ups</span>
+                <span style={{fontFamily:"monospace",fontSize:11}}>1 Muscle-up | 15 Dips | 20 Push-ups</span><br/>
+                <span style={{color:"#FF9500",fontFamily:"monospace",fontSize:11}}>*5 Chest Pull-up</span><span style={{fontSize:11}}> ← fallback si l'exercice précédent est raté</span>
               </div>
               <textarea value={pasteText} onChange={e=>setPasteText(e.target.value)}
-                placeholder={"Pull-ups 25\nDips 30\nMuscle-ups 10\nL-sit 20\nPush-ups 30"}
+                placeholder={"1 Muscle-up\n*5 Chest Pull-up\n15 Dips\n20 Push-ups"}
                 style={{width:"100%",height:180,background:G.bg,border:`1px solid ${G.border}`,borderRadius:8,color:G.text,fontFamily:"'Barlow Condensed',sans-serif",fontSize:14,padding:"10px 12px",outline:"none",resize:"vertical"}}/>
               {pasteError&&<div style={{fontSize:12,color:"#FF3B30"}}>{pasteError}</div>}
               <div style={{display:"flex",gap:10}}>
@@ -305,10 +350,13 @@ function SetupScreen(){
           </div>
           <div style={{display:"grid",gap:6}}>
             {exercises.map((ex,i)=>(
-              <div key={i} style={{background:G.surface,border:`1px solid ${G.border}`,borderRadius:6,padding:"8px 12px",display:"flex",alignItems:"center",gap:10}}>
+              <div key={i} style={{background:G.surface,border:`1px solid ${ex.fallback?"rgba(255,149,0,.35)":G.border}`,borderLeft:`3px solid ${ex.fallback?"#FF9500":G.border}`,borderRadius:6,padding:"8px 12px",display:"flex",alignItems:"center",gap:10}}>
                 <span style={{fontFamily:"monospace",fontSize:10,color:G.muted,width:20}}>{String(i+1).padStart(2,"0")}</span>
-                <input value={ex.name} onChange={e=>setExercises(p=>p.map((x,j)=>j===i?{...x,name:e.target.value}:x))}
-                  style={{flex:1,background:"transparent",border:"none",color:G.text,fontFamily:"'Barlow Condensed',sans-serif",fontSize:15,fontWeight:600,outline:"none"}}/>
+                <div style={{flex:1}}>
+                  <input value={ex.name} onChange={e=>setExercises(p=>p.map((x,j)=>j===i?{...x,name:e.target.value}:x))}
+                    style={{width:"100%",background:"transparent",border:"none",color:G.text,fontFamily:"'Barlow Condensed',sans-serif",fontSize:15,fontWeight:600,outline:"none"}}/>
+                  {ex.fallback&&<div style={{fontSize:10,color:"#FF9500",marginTop:2}}>↳ Fallback : {ex.fallback.reps} {ex.fallback.name}</div>}
+                </div>
                 {ex.isChain?(
                   <span style={{fontFamily:"'Share Tech Mono',monospace",fontSize:10,fontWeight:700,color:"#FF9500",whiteSpace:"nowrap"}}>⛓ {ex.steps.length} STEPS</span>
                 ):(<>
@@ -333,7 +381,7 @@ function SetupScreen(){
         </section>
 
         {!ok&&<div style={{textAlign:"center",fontSize:13,color:G.muted,letterSpacing:1,padding:"8px 0"}}>👥 Remplis au moins 2 noms d'athlètes pour continuer</div>}
-        <button onClick={create} disabled={!ok||creating}
+        <button onClick={()=>{getACtx();create();}} disabled={!ok||creating}
           style={{width:"100%",padding:18,background:ok?`linear-gradient(135deg,#FF3B30,#0A84FF)`:G.surface,border:"none",borderRadius:10,color:ok?"#fff":G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:22,fontWeight:900,letterSpacing:6,cursor:ok?"pointer":"not-allowed"}}>
           {creating?"CRÉATION…":"CRÉER LA SESSION →"}
         </button>
@@ -352,8 +400,18 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
   const[flash,setFlash]=useState(false);
   const[flashNR,setFlashNR]=useState(false);
   const[countdown,setCountdown]=useState(null);
+  // ── Fallback (Muscle-up raté) ──────────────────────────────────────────────
+  const[fallbackMode,setFallbackMode]=useState(false);
+  const[fallbackReps,setFallbackReps]=useState(0);
+  const[fallbackFlash,setFallbackFlash]=useState(false);
   const aRef=useRef(null);
   const timerRef=useRef(null);
+  // Victory sound guard
+  const prevFinished=useRef(false);
+  // Beep guard: avoid re-firing on re-render
+  const beepFiredRef=useRef({b2:false,b1:false,b0:false});
+  // Circuit strip auto-scroll
+  const stripRef=useRef(null);
 
   useEffect(()=>{
     db.ref(`sessions/${sessionId}`).once("value",s=>{if(s.exists())setSession(s.val());});
@@ -369,19 +427,49 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     return()=>aRef.current&&aRef.current.off();
   },[selected]);
 
+  // Reset fallback state when exercise changes
+  useEffect(()=>{
+    setFallbackMode(false);
+    setFallbackReps(0);
+    // Auto-scroll bande circuit vers l'exercice courant
+    const pill=document.getElementById(`strip-pill-${athlete?.currentExercise||0}`);
+    if(pill)pill.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+  },[athlete?.currentExercise]);
+
+  // Victory sound when athlete finishes
+  useEffect(()=>{
+    const finished=!!athlete?.finishTime;
+    if(finished&&!prevFinished.current){soundVictory();}
+    prevFinished.current=finished;
+  },[athlete?.finishTime]);
+
   // Sync countdown depuis Firebase timerStarted (chain ou exercice simple)
+  // + beeps dernières 3 secondes
   useEffect(()=>{
     clearInterval(timerRef.current);
+    beepFiredRef.current={b2:false,b1:false,b0:false};
     const i=athlete?.currentExercise||0;
     const ex=athlete?.exercises?.[i];
     let activeStep;
     if(ex?.type==="chain"){const si=ex.currentStep||0;activeStep=ex.steps?.[si];}
     else activeStep=ex;
-    if(!activeStep||activeStep.type!=="time"||!activeStep.timerStarted||activeStep.done){setCountdown(null);return;}
-    const elapsed=Math.floor((Date.now()-activeStep.timerStarted)/1000);
-    const rem=Math.max(0,(activeStep.duration||0)-elapsed);
+    if(!activeStep||activeStep.type!=="time"||activeStep.done){setCountdown(null);return;}
+    const calcMs=()=>(activeStep.accumulatedMs||0)+(activeStep.timerStarted?Date.now()-activeStep.timerStarted:0);
+    const calcRem=()=>Math.max(0,(activeStep.duration||0)-Math.floor(calcMs()/1000));
+    const rem=calcRem();
     setCountdown(rem);
-    if(rem>0)timerRef.current=setInterval(()=>setCountdown(c=>Math.max(0,(c||1)-1)),1000);
+    // En pause (pas de timerStarted) : countdown figé, pas d'intervalle
+    if(!activeStep.timerStarted)return;
+    if(rem>0)timerRef.current=setInterval(()=>{
+      const next=calcRem();
+      setCountdown(()=>{
+        // bip bip biiiip sur les 3 dernières secondes
+        if(next===2&&!beepFiredRef.current.b2){beepFiredRef.current.b2=true;beepShort();}
+        else if(next===1&&!beepFiredRef.current.b1){beepFiredRef.current.b1=true;beepShort();}
+        else if(next===0&&!beepFiredRef.current.b0){beepFiredRef.current.b0=true;beepLong();}
+        return next;
+      });
+    },500);
     return()=>clearInterval(timerRef.current);
   },[athlete]);
 
@@ -425,6 +513,7 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
 
   const addNoRep=async()=>{
     if(!athlete||athlete.finishTime)return;
+    soundNoRep();
     setFlashNR(true);setTimeout(()=>setFlashNR(false),120);
     await aRef.current.update({noReps:(athlete.noReps||0)+1});
   };
@@ -432,8 +521,28 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
   const launchTimer=async()=>{
     if(!athlete||athlete.finishTime)return;
     const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
-    if(ex.type==="chain"){const si=ex.currentStep||0;await aRef.current.child(`exercises/${i}/steps/${si}/timerStarted`).set(Date.now());}
-    else await aRef.current.child(`exercises/${i}/timerStarted`).set(Date.now());
+    if(ex.type==="chain"){const si=ex.currentStep||0;await aRef.current.child(`exercises/${i}/steps/${si}`).update({timerStarted:Date.now(),accumulatedMs:0});}
+    else await aRef.current.child(`exercises/${i}`).update({timerStarted:Date.now(),accumulatedMs:0});
+  };
+
+  const pauseTimer=async()=>{
+    if(!athlete||athlete.finishTime)return;
+    const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
+    let activeStep,path;
+    if(ex.type==="chain"){const si=ex.currentStep||0;activeStep=ex.steps[si];path=`exercises/${i}/steps/${si}`;}
+    else{activeStep=ex;path=`exercises/${i}`;}
+    if(!activeStep?.timerStarted)return;
+    const elapsed=(activeStep.accumulatedMs||0)+(Date.now()-activeStep.timerStarted);
+    await aRef.current.update({[`${path}/timerStarted`]:null,[`${path}/accumulatedMs`]:elapsed});
+  };
+
+  const resumeTimer=async()=>{
+    if(!athlete||athlete.finishTime)return;
+    const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
+    let path;
+    if(ex.type==="chain"){const si=ex.currentStep||0;path=`exercises/${i}/steps/${si}`;}
+    else path=`exercises/${i}`;
+    await aRef.current.child(`${path}/timerStarted`).set(Date.now());
   };
 
   const completeTimeEx=async()=>{
@@ -462,6 +571,41 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     }
     const upd={[`exercises/${i}/failed`]:true,[`exercises/${i}/timerStarted`]:null};
     await _advance(upd,i);await aRef.current.update(upd);
+  };
+
+  // ── Validé / Raté pour exercices avec fallback ──────────────────────────────
+  const validateExercise=async()=>{
+    if(!athlete||athlete.finishTime)return;
+    setFlash(true);setTimeout(()=>setFlash(false),100);
+    const i=athlete.currentExercise||0;const ex=athlete.exercises[i];
+    const upd={[`exercises/${i}/completedReps`]:ex.targetReps,[`exercises/${i}/done`]:true};
+    await _advance(upd,i);await aRef.current.update(upd);
+  };
+
+  const rateExercise=()=>{
+    soundNoRep();
+    setFallbackMode(true);
+    setFallbackReps(0);
+  };
+
+  const addFallbackRep=()=>{
+    if(!athlete||athlete.finishTime)return;
+    setFallbackFlash(true);setTimeout(()=>setFallbackFlash(false),80);
+    const i=athlete.currentExercise||0;
+    const ex=athlete.exercises[i];
+    const target=ex.fallback?.targetReps||1;
+    const next=fallbackReps+1;
+    setFallbackReps(next);
+    if(next>=target){
+      // Fallback réussi → on marque l'exercice comme fait et on avance
+      setTimeout(async()=>{
+        setFallbackMode(false);
+        setFallbackReps(0);
+        const upd={[`exercises/${i}/done`]:true};
+        await _advance(upd,i);
+        await aRef.current.update(upd);
+      },200);
+    }
   };
 
   const startAll=async()=>db.ref(`sessions/${sessionId}`).update({started:true,startTime:Date.now()});
@@ -501,6 +645,11 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
   const sIdx=isChain?(ex.currentStep||0):0;
   const step=isChain?ex?.steps?.[sIdx]:ex;
   const isTimeStep=step?.type==="time";
+  // Exercice avec fallback (Muscle-up) : pas chain, pas time, a un .fallback
+  const hasFallback=!isChain&&!isTimeStep&&!!ex?.fallback;
+  // États du timer ISO
+  const isoTimerRunning=isTimeStep&&!!step?.timerStarted&&!step?.done;
+  const isoTimerPaused=isTimeStep&&!step?.timerStarted&&!!(step?.accumulatedMs)&&!step?.done;
   const pct=(()=>{
     if(!ex)return 1;
     if(isChain){const done=ex.steps.filter(s=>s.done).length;const cur=isTimeStep?(countdown!==null?Math.max(0,1-countdown/(step.duration||1)):0):Math.min(1,(step?.completedReps||0)/(step?.targetReps||1));return Math.max(0,Math.min(1,(done+cur)/ex.steps.length));}
@@ -508,11 +657,13 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
     return Math.min(1,(step?.completedReps||0)/(step?.targetReps||1));
   })();
 
-  // ── Terminé ───────────────────────────────────────────────────────────────
+  // ── Victory screen ─────────────────────────────────────────────────────────
   if(finished)return(
     <div style={{height:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:G.bg,gap:16}}>
-      <div style={{fontSize:64}}>🏁</div>
-      <div style={{fontSize:36,fontWeight:900,color:"#30D158",letterSpacing:6}}>TERMINÉ</div>
+      <div style={{fontSize:64,animation:"victory-pop .5s cubic-bezier(.34,1.56,.64,1) both"}}>🏆</div>
+      <div style={{fontSize:36,fontWeight:900,letterSpacing:6,background:"linear-gradient(135deg,#FFD60A,#30D158)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",animation:"victory-pop .5s .12s cubic-bezier(.34,1.56,.64,1) both"}}>
+        CIRCUIT TERMINÉ !
+      </div>
       <div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:44,color}}>{fmt(athlete.finishTime)}</div>
       <button onClick={()=>setSelected(null)} style={{marginTop:12,background:G.surface,border:`1px solid ${G.border}`,borderRadius:8,color:G.muted,fontFamily:"'Barlow Condensed',sans-serif",fontSize:13,letterSpacing:2,padding:"10px 20px",cursor:"pointer"}}>
         ← CHANGER D'ATHLÈTE
@@ -522,7 +673,7 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
 
   // ── Interface juge ────────────────────────────────────────────────────────
   return(
-    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:flash?`rgba(${rgb(color)},0.15)`:G.bg,transition:"background .08s",userSelect:"none",WebkitUserSelect:"none"}}>
+    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:flash||fallbackFlash?`rgba(${rgb(color)},0.15)`:G.bg,transition:"background .08s",userSelect:"none",WebkitUserSelect:"none"}}>
 
       {/* Header */}
       <div style={{padding:"10px 16px",background:G.surface,borderBottom:`1px solid ${G.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
@@ -541,55 +692,183 @@ function JudgeScreen({sessionId,athleteName:initAthlete}){
         }
       </div>
 
-      {/* Infos athlète */}
-      <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"16px 20px",borderBottom:`3px solid ${color}`,background:`rgba(${rgb(color)},0.04)`}}>
-        <div style={{fontSize:10,letterSpacing:4,color:G.muted,marginBottom:8,textAlign:"center"}}>
-          EXERCICE {idx+1} / {athlete.exercises?.length}
-          {isChain&&<span style={{color:"#FF9500"}}> · ⛓ STEP {sIdx+1}/{ex.steps.length}</span>}
-        </div>
-        <div style={{fontSize:46,fontWeight:900,color,letterSpacing:1,lineHeight:1,marginBottom:6,textAlign:"center"}}>{selected.toUpperCase()}</div>
-        {isChain&&<div style={{fontSize:11,color:G.muted,letterSpacing:1,marginBottom:4,textAlign:"center",maxWidth:"90%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ex.name.toUpperCase()}</div>}
-        <div style={{fontSize:isChain?26:24,color:G.text,letterSpacing:2,marginBottom:18,textAlign:"center",fontWeight:700}}>{step?.name?.toUpperCase()}</div>
-        {isTimeStep?(
-          <div style={{fontFamily:"'Share Tech Mono',monospace",lineHeight:1,textAlign:"center"}}>
-            <span style={{fontSize:90,fontWeight:700,color:countdown===0?"#30D158":color}}>{countdown!==null?countdown:step.duration}</span>
-            <span style={{fontSize:36,color:G.muted}}> s</span>
-            {countdown!==null&&<div style={{fontSize:12,letterSpacing:3,color:G.muted,marginTop:6}}>{countdown===0?"TEMPS !":`/ ${step.duration}s`}</div>}
-          </div>
-        ):(
-          <div style={{fontFamily:"'Share Tech Mono',monospace",lineHeight:1,textAlign:"center"}}>
-            <span style={{fontSize:90,fontWeight:700,color}}>{step?.completedReps||0}</span>
-            <span style={{fontSize:36,color:G.muted}}> / {step?.targetReps}</span>
-          </div>
-        )}
-        <div style={{width:"70%",maxWidth:260,height:6,background:G.border,borderRadius:100,marginTop:18,overflow:"hidden"}}>
-          <div style={{height:"100%",width:`${pct*100}%`,background:isTimeStep&&countdown===0?"#30D158":color,borderRadius:100,transition:"width .15s",boxShadow:`0 0 10px rgba(${rgb(color)},0.6)`}}/>
+      {/* Bande circuit */}
+      <div ref={stripRef} className="strip-hide" style={{overflowX:"auto",flexShrink:0,background:G.surface,borderBottom:`1px solid ${G.border}`,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
+        <div style={{display:"flex",gap:4,padding:"8px 12px",alignItems:"stretch",minWidth:"max-content"}}>
+          {(athlete.exercises||[]).map((e,i)=>{
+            const done=e.done;const cur=i===idx;const upcoming=i>idx&&!done;
+            const exQty=e.type==="time"?`${e.duration}s`:e.type==="chain"?`⛓${e.steps?.length}`:e.targetReps;
+            const shortName=e.name.replace(/\s+\+\s+/g,"+").split(/\s+/).slice(0,2).join(" ");
+            return(
+              <div key={i} id={`strip-pill-${i}`} style={{
+                display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+                gap:1,padding:"5px 8px",borderRadius:7,minWidth:52,
+                background:done?`rgba(${rgb(color)},0.18)`:cur?`rgba(${rgb(color)},0.28)`:"transparent",
+                border:`1px solid ${done||cur?color:G.border}`,
+                opacity:upcoming?0.45:1,transition:"all .2s"
+              }}>
+                <div style={{fontSize:8,fontWeight:900,letterSpacing:1,color:done||cur?color:G.muted,lineHeight:1}}>
+                  {done?"✓":String(i+1).padStart(2,"0")}
+                </div>
+                <div style={{fontSize:9,fontWeight:cur?700:400,color:done?color:cur?G.text:G.muted,whiteSpace:"nowrap",maxWidth:52,overflow:"hidden",textOverflow:"ellipsis",lineHeight:1.2,textAlign:"center"}}>
+                  {shortName.toUpperCase()}
+                </div>
+                <div style={{fontSize:8,fontFamily:"monospace",color:done?color:cur?"#FFD60A":G.muted,lineHeight:1}}>
+                  {exQty}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Zone basse — reps ou timer */}
-      {isTimeStep?(
-        countdown===null?(
+      {/* Infos athlète */}
+      <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"12px 20px",borderBottom:`3px solid ${fallbackMode?"#FF9500":color}`,background:fallbackMode?"rgba(255,149,0,0.06)":`rgba(${rgb(color)},0.04)`}}>
+        <div style={{fontSize:10,letterSpacing:4,color:G.muted,marginBottom:6,textAlign:"center"}}>
+          {fallbackMode
+            ? <span style={{color:"#FF9500"}}>⚠ FALLBACK — MUSCLE UP RATÉ</span>
+            : <>EXERCICE {idx+1} / {athlete.exercises?.length}{isChain&&<span style={{color:"#FF9500"}}> · ⛓ STEP {sIdx+1}/{ex.steps.length}</span>}</>
+          }
+        </div>
+        <div style={{fontSize:42,fontWeight:900,color:fallbackMode?"#FF9500":color,letterSpacing:1,lineHeight:1,marginBottom:4,textAlign:"center"}}>{selected.toUpperCase()}</div>
+        {!fallbackMode&&isChain&&<div style={{fontSize:11,color:G.muted,letterSpacing:1,marginBottom:4,textAlign:"center",maxWidth:"90%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ex.name.toUpperCase()}</div>}
+        <div style={{fontSize:isChain?24:22,color:G.text,letterSpacing:2,marginBottom:12,textAlign:"center",fontWeight:700}}>
+          {fallbackMode
+            ? <span style={{color:"#FF9500"}}>{(ex.fallback?.targetReps||"")+" "+(ex.fallback?.name||"").toUpperCase()}</span>
+            : step?.name?.toUpperCase()
+          }
+        </div>
+        {fallbackMode?(
+          <div style={{fontFamily:"'Share Tech Mono',monospace",lineHeight:1,textAlign:"center"}}>
+            <span style={{fontSize:82,fontWeight:700,color:"#FF9500"}}>{fallbackReps}</span>
+            <span style={{fontSize:32,color:G.muted}}> / {ex.fallback?.targetReps}</span>
+          </div>
+        ):isTimeStep?(
+          <div style={{fontFamily:"'Share Tech Mono',monospace",lineHeight:1,textAlign:"center"}}>
+            <span style={{fontSize:82,fontWeight:700,color:countdown===0?"#30D158":isoTimerPaused?"#FFD60A":color}}>
+              {countdown!==null?(step.duration-countdown):0}
+            </span>
+            <span style={{fontSize:32,color:G.muted}}> s</span>
+            {countdown!==null&&<div style={{fontSize:12,letterSpacing:3,color:isoTimerPaused?"#FFD60A":G.muted,marginTop:4}}>
+              {countdown===0?"TEMPS !":isoTimerPaused?"⏸ EN PAUSE":`/ ${step.duration}s`}
+            </div>}
+          </div>
+        ):(
+          <div style={{fontFamily:"'Share Tech Mono',monospace",lineHeight:1,textAlign:"center"}}>
+            <span style={{fontSize:82,fontWeight:700,color}}>{step?.completedReps||0}</span>
+            <span style={{fontSize:32,color:G.muted}}> / {step?.targetReps}</span>
+          </div>
+        )}
+        {hasFallback&&!fallbackMode&&(
+          <div style={{marginTop:8,fontSize:11,color:"#FF9500",background:"rgba(255,149,0,.08)",borderLeft:"2px solid #FF9500",padding:"4px 12px",borderRadius:4}}>
+            Fallback si raté : {ex.fallback.targetReps} {ex.fallback.name}
+          </div>
+        )}
+        {fallbackMode&&(
+          <div style={{marginTop:6,fontSize:11,color:"#FF3B30",letterSpacing:2}}>RESTE BLOQUÉ JUSQU'À RÉUSSIR</div>
+        )}
+        <div style={{width:"70%",maxWidth:260,height:5,background:G.border,borderRadius:100,marginTop:12,overflow:"hidden"}}>
+          <div style={{height:"100%",width:`${(fallbackMode?fallbackReps/(ex.fallback?.targetReps||1):pct)*100}%`,background:fallbackMode?"#FF9500":isTimeStep&&countdown===0?"#30D158":color,borderRadius:100,transition:"width .15s",boxShadow:fallbackMode?`0 0 10px rgba(255,149,0,0.6)`:`0 0 10px rgba(${rgb(color)},0.6)`}}/>
+        </div>
+        {/* Prochain mouvement */}
+        {!fallbackMode&&idx+1<(athlete.exercises||[]).length&&(()=>{
+          const next=athlete.exercises[idx+1];
+          const nextQty=next.type==="time"?`⏱ ${next.duration}s`:next.type==="chain"?`⛓ ${next.steps?.length} STEPS`:`${next.targetReps} REPS`;
+          return(
+            <div style={{marginTop:10,padding:"6px 14px",background:`rgba(${rgb(color)},0.07)`,border:`1px solid rgba(${rgb(color)},0.2)`,borderRadius:8,textAlign:"center",display:"flex",alignItems:"center",gap:10}}>
+              <div style={{fontSize:9,letterSpacing:3,color:G.muted,whiteSpace:"nowrap"}}>PROCHAIN</div>
+              <div style={{fontSize:13,fontWeight:700,color:G.text,letterSpacing:1}}>
+                <span style={{color:"#FFD60A",fontFamily:"monospace",marginRight:4}}>{nextQty}</span>
+                {next.name.toUpperCase()}
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Zone basse — action buttons */}
+      {fallbackMode?(
+        /* Mode fallback : grand bouton + rep + NO REP */
+        <div style={{height:"50vh",display:"flex",flexShrink:0}}>
+          <button className="plus-btn" onPointerDown={e=>{e.preventDefault();addFallbackRep();}}
+            style={{flex:1,background:fallbackFlash?"rgba(255,149,0,0.3)":"rgba(255,149,0,0.12)",border:"none",borderTop:"3px solid #FF9500",color:"#FF9500",fontFamily:"'Barlow Condensed',sans-serif",fontSize:120,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s"}}>
+            +
+          </button>
+          <button onPointerDown={e=>{e.preventDefault();addNoRep();}}
+            style={{flex:1,background:flashNR?"rgba(255,59,48,0.28)":"rgba(255,59,48,0.08)",border:"none",borderTop:"3px solid #FF3B30",borderLeft:`1px solid ${G.border}`,color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:72,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s",gap:8}}>
+            🚩
+            <span style={{fontSize:16,letterSpacing:3,fontWeight:700}}>NO-REP</span>
+          </button>
+        </div>
+      ):isTimeStep?(
+        // ── Pas encore lancé ──────────────────────────────────────────────────
+        countdown===null&&!isoTimerPaused?(
           <button onPointerDown={e=>{e.preventDefault();launchTimer();}}
             style={{height:"50vh",flexShrink:0,background:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:60,fontWeight:900,letterSpacing:4,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:8}}>
             ▶
             <span style={{fontSize:22,letterSpacing:6}}>LANCER</span>
           </button>
+        // ── En cours ──────────────────────────────────────────────────────────
+        ):isoTimerRunning?(
+          <div style={{height:"50vh",display:"flex",flexDirection:"column",flexShrink:0}}>
+            <button onPointerDown={e=>{e.preventDefault();pauseTimer();}}
+              style={{flex:1,background:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:56,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:6}}>
+              ⏸
+              <span style={{fontSize:18,letterSpacing:6}}>PAUSE</span>
+            </button>
+            <div style={{display:"flex",height:"38%",flexShrink:0}}>
+              <button onPointerDown={e=>{e.preventDefault();completeTimeEx();}}
+                style={{flex:1,background:"rgba(48,209,88,0.12)",border:"none",borderTop:"3px solid #30D158",color:"#30D158",fontFamily:"'Barlow Condensed',sans-serif",fontSize:32,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:4}}>
+                ✅ <span style={{fontSize:14,letterSpacing:3}}>TENU</span>
+              </button>
+              <button onPointerDown={e=>{e.preventDefault();failTimeEx();}}
+                style={{flex:1,background:"rgba(255,59,48,0.1)",border:"none",borderTop:"3px solid #FF3B30",borderLeft:`1px solid ${G.border}`,color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:32,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:4}}>
+                ⛔ <span style={{fontSize:14,letterSpacing:3}}>RATÉ</span>
+              </button>
+            </div>
+          </div>
+        // ── En pause ──────────────────────────────────────────────────────────
         ):(
-          <div style={{height:"50vh",display:"flex",flexShrink:0}}>
-            <button onPointerDown={e=>{e.preventDefault();completeTimeEx();}}
-              style={{flex:1,background:"rgba(48,209,88,0.12)",border:"none",borderTop:"3px solid #30D158",color:"#30D158",fontFamily:"'Barlow Condensed',sans-serif",fontSize:60,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:8}}>
-              ✅
-              <span style={{fontSize:18,letterSpacing:3}}>TENU</span>
+          <div style={{height:"50vh",display:"flex",flexDirection:"column",flexShrink:0}}>
+            <button onPointerDown={e=>{e.preventDefault();resumeTimer();}}
+              style={{flex:1,background:"rgba(255,214,10,0.12)",border:"none",borderTop:"3px solid #FFD60A",color:"#FFD60A",fontFamily:"'Barlow Condensed',sans-serif",fontSize:56,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:6}}>
+              ▶
+              <span style={{fontSize:18,letterSpacing:4}}>REPRENDRE</span>
             </button>
-            <button onPointerDown={e=>{e.preventDefault();failTimeEx();}}
-              style={{flex:1,background:"rgba(255,59,48,0.1)",border:"none",borderTop:"3px solid #FF3B30",borderLeft:`1px solid ${G.border}`,color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:60,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:8}}>
-              ⛔
-              <span style={{fontSize:18,letterSpacing:3}}>RATÉ</span>
-            </button>
+            <div style={{display:"flex",height:"38%",flexShrink:0}}>
+              <button onPointerDown={e=>{e.preventDefault();completeTimeEx();}}
+                style={{flex:1,background:"rgba(48,209,88,0.12)",border:"none",borderTop:"3px solid #30D158",color:"#30D158",fontFamily:"'Barlow Condensed',sans-serif",fontSize:32,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:4}}>
+                ✅ <span style={{fontSize:14,letterSpacing:3}}>TENU</span>
+              </button>
+              <button onPointerDown={e=>{e.preventDefault();failTimeEx();}}
+                style={{flex:1,background:"rgba(255,59,48,0.1)",border:"none",borderTop:"3px solid #FF3B30",borderLeft:`1px solid ${G.border}`,color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:32,fontWeight:900,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:4}}>
+                ⛔ <span style={{fontSize:14,letterSpacing:3}}>RATÉ</span>
+              </button>
+            </div>
           </div>
         )
+      ):hasFallback?(
+        /* Exercice avec fallback (Muscle-up) : VALIDÉ / RATÉ + NO REP */
+        <div style={{height:"50vh",flexShrink:0,display:"flex",flexDirection:"column"}}>
+          <div style={{flex:1,display:"flex"}}>
+            <button onPointerDown={e=>{e.preventDefault();rateExercise();}}
+              style={{flex:1,background:"rgba(255,59,48,0.12)",border:"none",borderTop:"3px solid #FF3B30",color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:44,fontWeight:900,letterSpacing:2,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:8}}>
+              ✗
+              <span style={{fontSize:18,letterSpacing:4}}>RATÉ</span>
+            </button>
+            <button onPointerDown={e=>{e.preventDefault();validateExercise();}}
+              style={{flex:1,background:`rgba(${rgb(color)},0.12)`,border:"none",borderTop:`3px solid ${color}`,borderLeft:`1px solid ${G.border}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:44,fontWeight:900,letterSpacing:2,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",gap:8}}>
+              ✓
+              <span style={{fontSize:18,letterSpacing:4}}>VALIDÉ</span>
+            </button>
+          </div>
+          <button onPointerDown={e=>{e.preventDefault();addNoRep();}}
+            style={{height:56,background:flashNR?"rgba(255,59,48,0.22)":"rgba(255,59,48,0.06)",border:"none",borderTop:`1px solid ${G.border}`,color:"#FF3B30",fontFamily:"'Barlow Condensed',sans-serif",fontSize:14,fontWeight:700,letterSpacing:4,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,WebkitUserSelect:"none",userSelect:"none",transition:"background .08s"}}>
+            🚩 NO-REP
+          </button>
+        </div>
       ):(
+        /* Exercice normal : + rep + NO REP */
         <div style={{height:"50vh",display:"flex",flexShrink:0}}>
           <button className="plus-btn" onPointerDown={e=>{e.preventDefault();addRep();}}
             style={{flex:1,background:flash?`rgba(${rgb(color)},0.3)`:`rgba(${rgb(color)},0.1)`,border:"none",borderTop:`3px solid ${color}`,borderRight:`1px solid ${G.border}`,color,fontFamily:"'Barlow Condensed',sans-serif",fontSize:120,fontWeight:900,lineHeight:1,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",WebkitUserSelect:"none",userSelect:"none",transition:"background .08s"}}>
